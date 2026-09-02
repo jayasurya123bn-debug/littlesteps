@@ -20,9 +20,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <div style="display: flex; align-items: center; gap: var(--space-xl);" class="desktop-menu">
             <a href="<?= SITE_URL ?>/index.php" style="color: <?= $currentPage == 'index.php' ? 'var(--main-pink)' : 'var(--dark-gray)' ?>; font-weight: <?= $currentPage == 'index.php' ? '600' : '500' ?>; font-size: 15px;">Home</a>
             <a href="<?= SITE_URL ?>/search.php" style="color: <?= $currentPage == 'search.php' ? 'var(--main-pink)' : 'var(--dark-gray)' ?>; font-weight: <?= $currentPage == 'search.php' ? '600' : '500' ?>; font-size: 15px;">Find Care</a>
-            <a href="#how-it-works" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">How It Works</a>
-            <a href="#features" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">Features</a>
-            <a href="#pricing" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">Pricing</a>
+            <a href="<?= SITE_URL ?>/index.php#how-it-works" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">How It Works</a>
+            <a href="<?= SITE_URL ?>/index.php#features" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">Features</a>
+            <a href="<?= SITE_URL ?>/index.php#pricing" style="color: var(--dark-gray); font-weight: 500; font-size: 15px;">Pricing</a>
             <a href="<?= SITE_URL ?>/about.php" style="color: <?= $currentPage == 'about.php' ? 'var(--main-pink)' : 'var(--dark-gray)' ?>; font-weight: <?= $currentPage == 'about.php' ? '600' : '500' ?>; font-size: 15px;">About Us</a>
             
             <div style="width: 1px; height: 24px; background: #E0E0E0; margin: 0 var(--space-xs);"></div>
@@ -47,9 +47,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 <div id="mobileMenu" style="position: fixed; top: 80px; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: var(--shadow-md); z-index: 999; display: none; flex-direction: column; padding: var(--space-md);">
     <a href="<?= SITE_URL ?>/index.php" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Home</a>
     <a href="<?= SITE_URL ?>/search.php" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Find Care</a>
-    <a href="#how-it-works" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">How It Works</a>
-    <a href="#features" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Features</a>
-    <a href="#pricing" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Pricing</a>
+    <a href="<?= SITE_URL ?>/index.php#how-it-works" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">How It Works</a>
+    <a href="<?= SITE_URL ?>/index.php#features" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Features</a>
+    <a href="<?= SITE_URL ?>/index.php#pricing" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">Pricing</a>
     <a href="<?= SITE_URL ?>/about.php" style="padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--dark-gray); font-weight: 500;">About Us</a>
     
     <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
