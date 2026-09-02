@@ -232,7 +232,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- Basic -->
             <div class="pricing-card">
                 <h3 style="font-size: 1.5rem; color: var(--dark-gray); margin-bottom: 16px;">Hourly Drop-in</h3>
-                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">$15<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/hr</span></div>
+                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">₹250<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/hr</span></div>
                 <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">Perfect for occasional needs.</p>
                 
                 <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 32px;">
@@ -248,7 +248,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="pricing-card popular">
                 <div class="popular-badge">Most Popular</div>
                 <h3 style="font-size: 1.5rem; color: var(--main-pink); margin-bottom: 16px;">Weekly Standard</h3>
-                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">$250<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/wk</span></div>
+                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">₹4500<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/wk</span></div>
                 <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">Ideal for regular working hours.</p>
                 
                 <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 32px;">
@@ -264,7 +264,7 @@ require_once __DIR__ . '/includes/header.php';
             <!-- Premium -->
             <div class="pricing-card">
                 <h3 style="font-size: 1.5rem; color: var(--dark-gray); margin-bottom: 16px;">Monthly Premium</h3>
-                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">$900<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/mo</span></div>
+                <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">₹15000<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/mo</span></div>
                 <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">For complete 24/7 flexibility.</p>
                 
                 <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 32px;">
