@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Center Profile Setup & Management
  * Little Steps Childcare Platform

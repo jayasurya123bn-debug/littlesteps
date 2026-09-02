@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('parent');
 
 $pageTitleHeader = 'My Subscriptions';
 $pageTitle = 'Subscriptions';
@@ -17,7 +19,7 @@ $stmt = $conn->prepare("
     SELECT s.*, c.name as center_name, c.area, c.city 
     FROM subscriptions s
     JOIN daycare_centers c ON s.center_id = c.id
-    WHERE s.parent_id = ?
+    WHERE s.user_id = ?
     ORDER BY s.status ASC, s.end_date DESC
 ");
 $stmt->bind_param("i", $userId);
@@ -77,7 +79,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 
                 <div class="subscription-price" style="<?= $sub['status'] != 'active' ? 'color: var(--medium-gray);' : '' ?>">
-                    <?= formatCurrency($sub['price']) ?><span style="font-size: 14px; font-weight: normal; color: var(--medium-gray);">/mo</span>
+                    <?= formatCurrency($sub['monthly_amount']) ?><span style="font-size: 14px; font-weight: normal; color: var(--medium-gray);">/mo</span>
                 </div>
                 
                 <?php if ($sub['status'] == 'active'): ?>

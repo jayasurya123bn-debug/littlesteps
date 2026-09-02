@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('parent');
 
 $pageTitleHeader = 'My Bookings';
 $pageTitle = 'My Bookings';
@@ -17,8 +19,8 @@ $stmt = $conn->prepare("
     SELECT b.*, c.name as center_name, c.area, c.city 
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    WHERE b.parent_id = ? AND b.status IN ('pending', 'confirmed', 'in_progress')
-    ORDER BY b.start_time ASC
+    WHERE b.user_id = ? AND b.status IN ('pending', 'confirmed', 'in_progress')
+    ORDER BY b.start_datetime ASC
 ");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
@@ -56,16 +58,16 @@ require_once __DIR__ . '/includes/header.php';
                             </td>
                             <td>
                                 <?= htmlspecialchars($booking['child_name']) ?><br>
-                                <span style="font-size: 12px; color: var(--medium-gray);"><?= $booking['child_age'] ?> yrs</span>
+                                <span style="font-size: 12px; color: var(--medium-gray);"><?= round($booking['child_age_months'] / 12, 1) ?> yrs</span>
                             </td>
                             <td>
-                                <?= date('d M Y', strtotime($booking['start_time'])) ?><br>
+                                <?= date('d M Y', strtotime($booking['start_datetime'])) ?><br>
                                 <span style="font-size: 12px; color: var(--medium-gray);">
-                                    <?= date('h:i A', strtotime($booking['start_time'])) ?> - <?= date('h:i A', strtotime($booking['end_time'])) ?>
+                                    <?= date('h:i A', strtotime($booking['start_datetime'])) ?> - <?= date('h:i A', strtotime($booking['end_datetime'])) ?>
                                 </span>
                             </td>
                             <td>
-                                <strong><?= formatCurrency($booking['total_price']) ?></strong>
+                                <strong><?= formatCurrency($booking['final_amount']) ?></strong>
                             </td>
                             <td>
                                 <?php if ($booking['status'] == 'confirmed'): ?>

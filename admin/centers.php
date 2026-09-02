@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('admin');
 
 $pageTitleHeader = 'Daycare Centers';
 $pageTitle = 'Centers';
@@ -34,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
 
 // Get all non-pending centers
 $stmt = $conn->query("
-    SELECT c.*, u.first_name, u.last_name, u.phone 
+    SELECT c.*, p.owner_name as first_name, '' as last_name, p.phone
     FROM daycare_centers c
-    JOIN users u ON c.provider_id = u.id
+    JOIN providers p ON c.provider_id = p.id
     WHERE c.status != 'pending'
     ORDER BY c.created_at DESC
 ");

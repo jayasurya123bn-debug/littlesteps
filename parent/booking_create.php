@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('parent');
 
 $pageTitleHeader = 'New Booking';
 $pageTitle = 'New Booking';
@@ -62,17 +64,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Calculate estimated price (simplified logic)
                 $hours = ceil((strtotime($endDateTime) - strtotime($startDateTime)) / 3600);
                 // Fetch hourly rate
-                $rateStmt = $conn->prepare("SELECT p.pricing_hourly FROM providers p JOIN daycare_centers c ON c.provider_id = p.id WHERE c.id = ?");
+                $rateStmt = $conn->prepare("SELECT pricing_hourly FROM providers WHERE id = (SELECT provider_id FROM daycare_centers WHERE id = ?)");
                 $rateStmt->bind_param("i", $selectedCenterId);
                 $rateStmt->execute();
                 $rateResult = $rateStmt->get_result();
-                $hourlyRate = $rateResult->num_rows > 0 ? $rateResult->fetch_assoc()['pricing_hourly'] : 50; // Default 50
+                $hourlyRate = $rateResult->num_rows > 0 ? ($rateResult->fetch_assoc()['pricing_hourly'] ?? 50) : 50;
                 
-                $totalPrice = $hours * $hourlyRate;
-                $status = 'pending';
+                $totalAmount = $hours * $hourlyRate;
+                $bookingCode = 'LS' . strtoupper(substr(uniqid(), -6));
+                $bookingType = 'hourly';
+                $childAgeMonths = (int)($childAge * 12);
                 
-                $insertStmt = $conn->prepare("INSERT INTO bookings (parent_id, center_id, child_name, child_age, special_needs, start_time, end_time, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $insertStmt->bind_param("iisssssds", $userId, $selectedCenterId, $childName, $childAge, $specialNeeds, $startDateTime, $endDateTime, $totalPrice, $status);
+                $insertStmt = $conn->prepare("
+                    INSERT INTO bookings 
+                        (booking_code, user_id, center_id, child_name, child_age_months, 
+                         booking_type, start_datetime, end_datetime, hours_count,
+                         unit_price, total_amount, final_amount, 
+                         special_requirements, status, payment_status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')
+                ");
+                $insertStmt->bind_param(
+                    "siisssssdddd s",
+                    $bookingCode, $userId, $selectedCenterId, $childName, $childAgeMonths,
+                    $bookingType, $startDateTime, $endDateTime, $hours,
+                    $hourlyRate, $totalAmount, $totalAmount,
+                    $specialNeeds
+                );
                 
                 if ($insertStmt->execute()) {
                     setFlashMessage('success', 'Booking request submitted successfully! Waiting for center confirmation.');

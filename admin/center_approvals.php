@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('admin');
 
 $pageTitleHeader = 'Center Approvals';
 $pageTitle = 'Approvals';
@@ -17,17 +19,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
         $centerId = (int)$_POST['center_id'];
         $action = $_POST['action'];
         
-        $newStatus = ($action === 'approve') ? 'active' : 'rejected';
-        
-        $updStmt = $conn->prepare("UPDATE daycare_centers SET status = ? WHERE id = ?");
-        $updStmt->bind_param("si", $newStatus, $centerId);
-        
-        if ($updStmt->execute()) {
-            // Also notify the provider (stubbed logic)
-            $msg = ($action === 'approve') ? "Center approved successfully." : "Center rejected.";
-            setFlashMessage('success', $msg);
+        if ($action === 'approve') {
+            // Activate the center
+            $updCenter = $conn->prepare("UPDATE daycare_centers SET status = 'active' WHERE id = ?");
+            $updCenter->bind_param("i", $centerId);
+            $updCenter->execute();
+            // Activate the provider who owns this center
+            $updProvider = $conn->prepare("UPDATE providers p JOIN daycare_centers c ON c.provider_id = p.id SET p.status = 'approved', p.is_active = 1 WHERE c.id = ?");
+            $updProvider->bind_param("i", $centerId);
+            $updProvider->execute();
+            setFlashMessage('success', 'Center approved and provider activated successfully.');
         } else {
-            setFlashMessage('error', 'Failed to update center status.');
+            $updCenter = $conn->prepare("UPDATE daycare_centers SET status = 'inactive' WHERE id = ?");
+            $updCenter->bind_param("i", $centerId);
+            $updCenter->execute();
+            // Update provider status to rejected
+            $updProvider = $conn->prepare("UPDATE providers p JOIN daycare_centers c ON c.provider_id = p.id SET p.status = 'rejected' WHERE c.id = ?");
+            $updProvider->bind_param("i", $centerId);
+            $updProvider->execute();
+            setFlashMessage('success', 'Center rejected.');
         }
     }
     redirect('/admin/center_approvals.php');
@@ -35,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
 
 // Get pending centers
 $stmt = $conn->query("
-    SELECT c.*, u.first_name, u.last_name, u.email, u.phone 
+    SELECT c.*, p.owner_name as first_name, '' as last_name, p.email, p.phone
     FROM daycare_centers c
-    JOIN users u ON c.provider_id = u.id
+    JOIN providers p ON c.provider_id = p.id
     WHERE c.status = 'pending'
     ORDER BY c.created_at ASC
 ");

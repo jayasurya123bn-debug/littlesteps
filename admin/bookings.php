@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('admin');
 
 $pageTitleHeader = 'Platform Bookings';
 $pageTitle = 'Bookings';
@@ -26,7 +28,7 @@ $stmt = $conn->prepare("
     SELECT b.*, c.name as center_name, u.first_name, u.last_name
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    JOIN users u ON b.parent_id = u.id
+    JOIN users u ON b.user_id = u.id
     ORDER BY b.created_at DESC
     LIMIT ? OFFSET ?
 ");
@@ -66,14 +68,14 @@ require_once __DIR__ . '/includes/header.php';
                             <td style="font-size: 12px; color: var(--medium-gray);"><?= date('d M Y, h:i A', strtotime($b['created_at'])) ?></td>
                             <td><strong><?= htmlspecialchars($b['center_name']) ?></strong></td>
                             <td><?= htmlspecialchars($b['first_name'] . ' ' . $b['last_name']) ?></td>
-                            <td><?= htmlspecialchars($b['child_name']) ?> (<?= $b['child_age'] ?>)</td>
+                            <td><?= htmlspecialchars($b['child_name']) ?> (<?= $b['child_age_months'] ?> mo)</td>
                             <td style="font-size: 12px;">
-                                <?= date('d M', strtotime($b['start_time'])) ?><br>
+                                <?= date('d M', strtotime($b['start_datetime'])) ?><br>
                                 <span style="color: var(--medium-gray);">
-                                    <?= date('h:i A', strtotime($b['start_time'])) ?> - <?= date('h:i A', strtotime($b['end_time'])) ?>
+                                    <?= date('h:i A', strtotime($b['start_datetime'])) ?> - <?= date('h:i A', strtotime($b['end_datetime'])) ?>
                                 </span>
                             </td>
-                            <td><strong><?= formatCurrency($b['total_price']) ?></strong></td>
+                            <td><strong><?= formatCurrency($b['final_amount']) ?></strong></td>
                             <td>
                                 <?php if ($b['status'] == 'completed'): ?>
                                     <span class="badge badge-success">Completed</span>

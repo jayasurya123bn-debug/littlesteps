@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Booking Details (Provider)
  * Little Steps Childcare Platform

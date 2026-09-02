@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('parent');
 
 $pageTitleHeader = 'Dashboard';
 $pageTitle = 'Dashboard';
@@ -17,8 +19,8 @@ $upcomingStmt = $conn->prepare("
     SELECT b.*, c.name as center_name, c.area, c.city 
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    WHERE b.parent_id = ? AND b.start_time > NOW() AND b.status IN ('pending', 'confirmed')
-    ORDER BY b.start_time ASC LIMIT 3
+    WHERE b.user_id = ? AND b.start_datetime > NOW() AND b.status IN ('pending', 'confirmed')
+    ORDER BY b.start_datetime ASC LIMIT 3
 ");
 $upcomingStmt->bind_param("i", $userId);
 $upcomingStmt->execute();
@@ -29,7 +31,7 @@ $subStmt = $conn->prepare("
     SELECT s.*, c.name as center_name 
     FROM subscriptions s
     JOIN daycare_centers c ON s.center_id = c.id
-    WHERE s.parent_id = ? AND s.status = 'active'
+    WHERE s.user_id = ? AND s.status = 'active'
 ");
 $subStmt->bind_param("i", $userId);
 $subStmt->execute();
@@ -82,9 +84,9 @@ require_once __DIR__ . '/includes/header.php';
             <?php foreach ($upcomingBookings as $booking): ?>
                 <div class="card" style="display: flex; gap: var(--space-md); align-items: stretch; padding: 0; overflow: hidden; margin-bottom: var(--space-md);">
                     <div style="background: var(--baby-pink); padding: var(--space-md); text-align: center; display: flex; flex-direction: column; justify-content: center; min-width: 100px;">
-                        <span style="font-size: 14px; font-weight: 600; color: var(--main-pink); text-transform: uppercase;"><?= date('M', strtotime($booking['start_time'])) ?></span>
-                        <span style="font-size: 28px; font-weight: 700; color: var(--dark-pink); line-height: 1;"><?= date('d', strtotime($booking['start_time'])) ?></span>
-                        <span style="font-size: 12px; color: var(--medium-gray);"><?= date('l', strtotime($booking['start_time'])) ?></span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--main-pink); text-transform: uppercase;"><?= date('M', strtotime($booking['start_datetime'])) ?></span>
+                        <span style="font-size: 28px; font-weight: 700; color: var(--dark-pink); line-height: 1;"><?= date('d', strtotime($booking['start_datetime'])) ?></span>
+                        <span style="font-size: 12px; color: var(--medium-gray);"><?= date('l', strtotime($booking['start_datetime'])) ?></span>
                     </div>
                     <div style="padding: var(--space-md) var(--space-md) var(--space-md) 0; flex-grow: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -96,10 +98,10 @@ require_once __DIR__ . '/includes/header.php';
                             <?php endif; ?>
                         </div>
                         <p style="color: var(--medium-gray); font-size: 13px; margin-bottom: 8px;">
-                            <i class="fas fa-clock"></i> <?= date('h:i A', strtotime($booking['start_time'])) ?> - <?= date('h:i A', strtotime($booking['end_time'])) ?>
+                            <i class="fas fa-clock"></i> <?= date('h:i A', strtotime($booking['start_datetime'])) ?> - <?= date('h:i A', strtotime($booking['end_datetime'])) ?>
                         </p>
                         <p style="color: var(--medium-gray); font-size: 13px; margin-bottom: 0;">
-                            <i class="fas fa-child"></i> Care for <strong><?= $booking['child_name'] ?></strong> (<?= $booking['child_age'] ?> yrs)
+                            <i class="fas fa-child"></i> Care for <strong><?= $booking['child_name'] ?></strong> (<?= round($booking['child_age_months'] / 12, 1) ?> yrs)
                         </p>
                     </div>
                 </div>

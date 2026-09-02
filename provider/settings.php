@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Provider Settings Page
  * Little Steps Childcare Platform

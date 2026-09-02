@@ -5,6 +5,8 @@
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/functions.php';
+requireRole('admin');
 
 $pageTitleHeader = 'Platform Revenue';
 $pageTitle = 'Finances';
@@ -15,24 +17,24 @@ $totalPlatformRev = 0;
 $monthlyPlatformRev = 0;
 $totalTransactions = 0;
 
-$qTotal = $conn->query("SELECT SUM(total_price) as total, COUNT(*) as cnt FROM bookings WHERE status = 'completed'");
+$qTotal = $conn->query("SELECT SUM(final_amount) as total, COUNT(*) as cnt FROM bookings WHERE status = 'completed'");
 if ($qTotal) {
     $res = $qTotal->fetch_assoc();
     $totalPlatformRev = ($res['total'] ?? 0) * 0.10; // 10% platform fee
     $totalTransactions = $res['cnt'];
 }
 
-$qMonth = $conn->query("SELECT SUM(total_price) as total FROM bookings WHERE status = 'completed' AND MONTH(start_time) = MONTH(CURDATE()) AND YEAR(start_time) = YEAR(CURDATE())");
+$qMonth = $conn->query("SELECT SUM(final_amount) as total FROM bookings WHERE status = 'completed' AND MONTH(start_datetime) = MONTH(CURDATE()) AND YEAR(start_datetime) = YEAR(CURDATE())");
 if ($qMonth) {
     $monthlyPlatformRev = ($qMonth->fetch_assoc()['total'] ?? 0) * 0.10;
 }
 
 // Get recent transactions
 $stmt = $conn->query("
-    SELECT b.id, b.total_price, b.created_at, c.name as center_name, u.first_name, u.last_name
+    SELECT b.id, b.final_amount as total_price, b.created_at, c.name as center_name, u.first_name, u.last_name
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    JOIN users u ON b.parent_id = u.id
+    JOIN users u ON b.user_id = u.id
     WHERE b.status = 'completed'
     ORDER BY b.created_at DESC
     LIMIT 20
