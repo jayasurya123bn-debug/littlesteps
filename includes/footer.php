@@ -11,8 +11,17 @@
                 <!-- About Column -->
                 <div>
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
-                        <div style="color: var(--main-pink); font-size: 28px; transform: rotate(-15deg);">
-                            <i class="fas fa-shoe-prints"></i>
+                        <div style="position: relative; width: 44px; height: 44px; background: linear-gradient(135deg, #FF6B9D, #E91E63); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(233,30,99,0.4); overflow: hidden; flex-shrink: 0;">
+                            <svg viewBox="0 0 40 40" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="6" width="9" height="16" rx="4.5" fill="white" opacity="0.95"/>
+                                <ellipse cx="10" cy="23" rx="7" ry="4" fill="white" opacity="0.85"/>
+                                <ellipse cx="14" cy="24" rx="3" ry="2.5" fill="rgba(255,255,255,0.6)"/>
+                                <rect x="23" y="6" width="9" height="16" rx="4.5" fill="white" opacity="0.95"/>
+                                <ellipse cx="25" cy="23" rx="7" ry="4" fill="white" opacity="0.85"/>
+                                <ellipse cx="29" cy="24" rx="3" ry="2.5" fill="rgba(255,255,255,0.6)"/>
+                                <rect x="8" y="17" width="9" height="2.5" rx="1" fill="rgba(255,182,193,0.7)"/>
+                                <rect x="23" y="17" width="9" height="2.5" rx="1" fill="rgba(255,182,193,0.7)"/>
+                            </svg>
                         </div>
                         <span style="font-weight: 700; font-size: 1.5rem; color: var(--white); letter-spacing: -0.5px;">Little <span style="color: var(--main-pink);">Steps</span></span>
                     </div>
