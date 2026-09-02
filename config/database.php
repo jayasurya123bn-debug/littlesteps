@@ -4,11 +4,19 @@
  * Little Steps Childcare Platform
  */
 
-// Database credentials
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root'); // XAMPP default
-define('DB_PASS', ''); // XAMPP default
-define('DB_NAME', 'littlesteps_db');
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
+    // Local XAMPP Environment
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('DB_NAME', 'littlesteps_db');
+} else {
+    // Production Unaux Environment
+    define('DB_HOST', 'sql103.ezyro.com');
+    define('DB_USER', 'ezyro_42742254');
+    define('DB_PASS', 'c45483b8a78869e');
+    define('DB_NAME', 'ezyro_42742254_childcare');
+}
 
 /**
  * Get database connection
