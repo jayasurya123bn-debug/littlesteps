@@ -70,13 +70,87 @@ require_once __DIR__ . '/includes/header.php';
 
 <div style="background-color: var(--baby-pink); min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: var(--space-2xl) var(--space-md);">
     <div class="card" style="width: 100%; max-width: 800px; margin: 0; box-shadow: var(--shadow-xl);">
-        <div style="text-align: center; margin-bottom: var(--space-xl);">
-            <div style="width: 60px; height: 60px; background: var(--main-pink); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto var(--space-md);">
-                <i class="fas fa-store"></i>
-            </div>
-            <h2>Partner with Us</h2>
-            <p style="color: var(--medium-gray);">Register your daycare center on Little Steps</p>
+        <style>
+    .icon-circle-wrap {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        margin: 0 auto var(--space-md);
+    }
+    .icon-circle-glow {
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #FF6B9D, #FF9E6B, #FFD36B, #6BFFB2, #6BB2FF, #C96BFF, #FF6B9D);
+        animation: spin-glow 4s linear infinite;
+        filter: blur(4px);
+        opacity: 0.7;
+    }
+    .icon-circle-inner {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #FF6B9D 0%, #E91E63 40%, #AD1457 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: white;
+        box-shadow: 0 8px 32px rgba(233,30,99,0.4);
+        overflow: hidden;
+    }
+    .icon-circle-inner::before {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -20%;
+        width: 60%;
+        height: 60%;
+        background: rgba(255,255,255,0.25);
+        border-radius: 50%;
+        filter: blur(6px);
+    }
+    @keyframes spin-glow {
+        to { transform: rotate(360deg); }
+    }
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 15px;
+        color: white;
+        margin-right: 10px;
+        flex-shrink: 0;
+        vertical-align: middle;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .section-heading {
+        display: flex;
+        align-items: center;
+        color: var(--dark-pink);
+        border-bottom: 2px solid;
+        border-image: linear-gradient(90deg, var(--main-pink), transparent) 1;
+        padding-bottom: var(--space-sm);
+        margin-bottom: var(--space-md);
+        margin-top: var(--space-lg);
+    }
+</style>
+
+<div style="text-align: center; margin-bottom: var(--space-xl);">
+    <div class="icon-circle-wrap">
+        <div class="icon-circle-glow"></div>
+        <div class="icon-circle-inner">
+            <i class="fas fa-store"></i>
         </div>
+    </div>
+    <h2 style="font-size: 2rem; font-weight: 700; color: var(--near-black); margin-bottom: 6px;">Partner with Us</h2>
+    <p style="color: var(--medium-gray);">Register your daycare center on Little Steps</p>
+</div>
         
         <?php if (!empty($error)): ?>
             <div class="alert alert-error" style="animation: shake 0.5s;">
@@ -87,7 +161,10 @@ require_once __DIR__ . '/includes/header.php';
         <form method="POST" action="provider-register.php" class="needs-validation">
             <?php csrfField(); ?>
             
-            <h4 style="color: var(--dark-pink); border-bottom: 1px solid var(--light-pink); padding-bottom: var(--space-sm); margin-bottom: var(--space-md);">Business Information</h4>
+            <h4 class="section-heading">
+                <span class="section-badge" style="background: linear-gradient(135deg, #FF6B9D, #E91E63);">1</span>
+                Business Information
+            </h4>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md);">
                 <div class="form-group">
@@ -122,7 +199,10 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
             
-            <h4 style="color: var(--dark-pink); border-bottom: 1px solid var(--light-pink); padding-bottom: var(--space-sm); margin-top: var(--space-lg); margin-bottom: var(--space-md);">Location Details</h4>
+            <h4 class="section-heading" style="margin-top: var(--space-lg);">
+                <span class="section-badge" style="background: linear-gradient(135deg, #FF9E6B, #FF6B2B);">2</span>
+                Location Details
+            </h4>
             
             <div class="form-group">
                 <label class="form-label">Full Address</label>

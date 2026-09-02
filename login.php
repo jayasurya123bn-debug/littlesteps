@@ -92,11 +92,19 @@ require_once __DIR__ . '/includes/header.php';
 
 <div style="background-color: var(--baby-pink); min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: var(--space-2xl) var(--space-md);">
     <div class="card" style="width: 100%; max-width: 450px; margin: 0; box-shadow: var(--shadow-xl);">
+        <style>
+    .icon-circle-wrap { position: relative; width: 90px; height: 90px; margin: 0 auto var(--space-md); }
+    .icon-circle-glow { position: absolute; inset: -8px; border-radius: 50%; background: conic-gradient(from 0deg, #FF6B9D, #FF9E6B, #FFD36B, #6BFFB2, #6BB2FF, #C96BFF, #FF6B9D); animation: spin-glow 4s linear infinite; filter: blur(4px); opacity: 0.7; }
+    .icon-circle-inner { position: relative; width: 90px; height: 90px; background: linear-gradient(135deg, #FF6B9D 0%, #E91E63 40%, #AD1457 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; color: white; box-shadow: 0 8px 32px rgba(233,30,99,0.4); overflow: hidden; }
+    .icon-circle-inner::before { content: ''; position: absolute; top: -20%; left: -20%; width: 60%; height: 60%; background: rgba(255,255,255,0.25); border-radius: 50%; filter: blur(6px); }
+    @keyframes spin-glow { to { transform: rotate(360deg); } }
+</style>
         <div style="text-align: center; margin-bottom: var(--space-xl);">
-            <div style="width: 60px; height: 60px; background: var(--main-pink); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto var(--space-md);">
-                <i class="fas fa-lock"></i>
+            <div class="icon-circle-wrap">
+                <div class="icon-circle-glow"></div>
+                <div class="icon-circle-inner"><i class="fas fa-lock"></i></div>
             </div>
-            <h2>Welcome Back</h2>
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--near-black); margin-bottom: 6px;">Welcome Back</h2>
             <p style="color: var(--medium-gray);">Login to your Little Steps account</p>
         </div>
         
