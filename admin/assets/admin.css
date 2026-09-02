@@ -1,0 +1,36 @@
+/* 
+ * Admin Dashboard specific styles 
+ * Little Steps Childcare Platform
+ */
+:root {
+    --admin-primary: var(--main-pink);
+}
+
+.admin-stat-card {
+    background: var(--white);
+    border: 1px solid var(--light-pink);
+    border-radius: 12px;
+    padding: var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    box-shadow: 0 2px 12px rgba(233, 30, 99, 0.08);
+    transition: transform 0.3s;
+}
+.admin-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(233, 30, 99, 0.15);
+}
+.admin-stat-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--baby-pink);
+    color: var(--main-pink);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.admin-stat-details h3 { margin: 0; font-size: 24px; color: var(--near-black); }
+.admin-stat-details p { margin: 0; color: var(--medium-gray); font-size: 14px; font-weight: 500; }
