@@ -149,7 +149,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="form-group">
                 <label class="form-label" style="display: flex; justify-content: space-between;">
                     Password
-                    <a href="#" style="font-size: 12px; font-weight: normal;">Forgot Password?</a>
+                    <a href="forgot-password.php" style="font-size: 12px; font-weight: normal; color: var(--main-pink); text-decoration: none;">Forgot Password?</a>
                 </label>
                 <div style="position: relative;">
                     <i class="fas fa-key" style="position: absolute; left: 14px; top: 12px; color: var(--medium-gray);"></i>
