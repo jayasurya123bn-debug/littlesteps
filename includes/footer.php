@@ -10,18 +10,9 @@
                 
                 <!-- About Column -->
                 <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
-                        <div style="position: relative; width: 44px; height: 44px; background: linear-gradient(135deg, #FF6B9D, #E91E63); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(233,30,99,0.4); overflow: hidden; flex-shrink: 0;">
-                            <svg viewBox="0 0 40 40" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="8" y="6" width="9" height="16" rx="4.5" fill="white" opacity="0.95"/>
-                                <ellipse cx="10" cy="23" rx="7" ry="4" fill="white" opacity="0.85"/>
-                                <ellipse cx="14" cy="24" rx="3" ry="2.5" fill="rgba(255,255,255,0.6)"/>
-                                <rect x="23" y="6" width="9" height="16" rx="4.5" fill="white" opacity="0.95"/>
-                                <ellipse cx="25" cy="23" rx="7" ry="4" fill="white" opacity="0.85"/>
-                                <ellipse cx="29" cy="24" rx="3" ry="2.5" fill="rgba(255,255,255,0.6)"/>
-                                <rect x="8" y="17" width="9" height="2.5" rx="1" fill="rgba(255,182,193,0.7)"/>
-                                <rect x="23" y="17" width="9" height="2.5" rx="1" fill="rgba(255,182,193,0.7)"/>
-                            </svg>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 24px;">
+                        <div style="width: 52px; height: 52px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(233,30,99,0.3); overflow: hidden; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);">
+                            <img src="<?= SITE_URL ?>/assets/images/logo-baby-legs.jpg" alt="Little Steps Logo" style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;">
                         </div>
                         <span style="font-weight: 700; font-size: 1.5rem; color: var(--white); letter-spacing: -0.5px;">Little <span style="color: var(--main-pink);">Steps</span></span>
                     </div>
