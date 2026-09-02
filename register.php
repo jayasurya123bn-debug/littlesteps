@@ -67,8 +67,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div style="background-color: var(--baby-pink); min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: var(--space-2xl) var(--space-md);">
-    <div class="card" style="width: 100%; max-width: 600px; margin: 0; box-shadow: var(--shadow-xl);">
+<style>
+    .bg-blobs { position: relative; background: linear-gradient(135deg, #FFF0F5 0%, #FCE4EC 50%, #FFF0F5 100%); min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: var(--space-2xl) var(--space-md); overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; animation: blob-float 8s ease-in-out infinite; }
+    .blob-1 { width: 320px; height: 320px; background: radial-gradient(circle, #FF6B9D, #E91E63); top: -80px; left: -80px; animation-delay: 0s; }
+    .blob-2 { width: 280px; height: 280px; background: radial-gradient(circle, #FFD36B, #FF9E6B); top: 10%; right: -60px; animation-delay: 2s; }
+    .blob-3 { width: 260px; height: 260px; background: radial-gradient(circle, #6BB2FF, #6B6BFF); bottom: -60px; left: 10%; animation-delay: 4s; }
+    .blob-4 { width: 200px; height: 200px; background: radial-gradient(circle, #C96BFF, #FF6BF5); bottom: 5%; right: 5%; animation-delay: 1s; }
+    .blob-5 { width: 150px; height: 150px; background: radial-gradient(circle, #6BFFB2, #6BF5D4); top: 50%; left: 40%; animation-delay: 3s; }
+    @keyframes blob-float {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        33% { transform: translateY(-20px) scale(1.05); }
+        66% { transform: translateY(10px) scale(0.95); }
+    }
+</style>
+
+<div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="blob blob-5"></div>
+
+    <div class="card" style="width: 100%; max-width: 600px; margin: 0; box-shadow: 0 20px 60px rgba(233,30,99,0.2); backdrop-filter: blur(2px); position: relative; z-index: 2;">
         <style>
     .icon-circle-wrap { position: relative; width: 90px; height: 90px; margin: 0 auto var(--space-md); }
     .icon-circle-glow { position: absolute; inset: -8px; border-radius: 50%; background: conic-gradient(from 0deg, #FF6B9D, #FF9E6B, #FFD36B, #6BFFB2, #6BB2FF, #C96BFF, #FF6B9D); animation: spin-glow 4s linear infinite; filter: blur(4px); opacity: 0.7; }
