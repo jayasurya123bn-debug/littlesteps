@@ -7,12 +7,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <div class="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-icon" style="color: var(--white); background: rgba(255,255,255,0.2);">
-            <i class="fas fa-shield-alt"></i>
+        <div class="logo-icon" style="background: white; border: 2px solid rgba(233,30,99,0.15); box-shadow: 0 4px 16px rgba(233,30,99,0.25); overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0;">
+            <img src="<?= SITE_URL ?>/assets/images/logo-baby-legs.jpg" alt="Little Steps Logo" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="brand-text">
-            <span class="brand-name">ADMIN PANEL</span>
-            <span class="brand-tagline">System Management</span>
+            <span class="brand-name">LITTLE STEPS</span>
+            <span class="brand-tagline">Admin Portal</span>
         </div>
     </div>
     

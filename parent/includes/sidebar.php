@@ -7,8 +7,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <div class="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-icon">
-            <i class="fas fa-baby"></i>
+        <div class="logo-icon" style="background: white; border: 2px solid rgba(233,30,99,0.15); box-shadow: 0 4px 16px rgba(233,30,99,0.25); overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0;">
+            <img src="<?= SITE_URL ?>/assets/images/logo-baby-legs.jpg" alt="Little Steps Logo" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="brand-text">
             <span class="brand-name">LITTLE STEPS</span>
