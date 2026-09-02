@@ -38,7 +38,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div>
             <div style="width: 100%; height: 400px; background: var(--light-pink); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
-                <div style="width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1587691592099-24045742c181?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover;"></div>
+                <div style="width: 100%; height: 100%; background: url('<?= SITE_URL ?>/assets/images/about-story.jpg') center/cover;"></div>
             </div>
         </div>
     </div>
