@@ -1,6 +1,6 @@
 <?php
 /**
- * Parent Notifications Page
+ * Parent Notifications Center
  * Little Steps Childcare Platform
  */
 require_once __DIR__ . '/../config/session.php';
@@ -14,61 +14,128 @@ $pageTitle = 'Notifications';
 $conn = getDBConnection();
 $userId = $_SESSION['user_id'];
 
-// Mark all as read if requested
-if (isset($_GET['mark_read'])) {
-    $updateStmt = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND user_type = 'parent'");
-    $updateStmt->bind_param("i", $userId);
-    $updateStmt->execute();
+// Handle Actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (verifyCSRFToken($_POST['csrf_token'])) {
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'mark_all_read') {
+            $stmt = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ?");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            setFlashMessage('success', 'All notifications marked as read.');
+            
+        } elseif ($action === 'delete') {
+            $notifId = (int)$_POST['notif_id'];
+            $stmt = $conn->prepare("DELETE FROM notifications WHERE id = ? AND user_id = ?");
+            $stmt->bind_param("ii", $notifId, $userId);
+            $stmt->execute();
+            setFlashMessage('success', 'Notification removed.');
+        }
+    }
     redirect('/parent/notifications.php');
 }
 
-// Get Notifications
-$stmt = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? AND user_type = 'parent' ORDER BY created_at DESC");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$notifications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+// Filter
+$filter = sanitizeInput($conn, $_GET['filter'] ?? 'all');
+$sql = "SELECT * FROM notifications WHERE user_id = $userId";
+
+if ($filter === 'unread') {
+    $sql .= " AND is_read = 0";
+} elseif ($filter === 'booking') {
+    $sql .= " AND type = 'booking'";
+} elseif ($filter === 'system') {
+    $sql .= " AND type = 'system'";
+}
+
+$sql .= " ORDER BY created_at DESC";
+$notifications = $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
+
 $conn->close();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="card" style="padding: 0; overflow: hidden; max-width: 800px; margin: 0 auto;">
-    <div style="padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--light-pink); display: flex; justify-content: space-between; align-items: center; background: var(--baby-pink);">
-        <h3 style="margin: 0; color: var(--dark-pink); font-size: 18px;">Recent Notifications</h3>
-        <?php if (count($notifications) > 0): ?>
-            <a href="?mark_read=1" class="btn btn-sm btn-outline"><i class="fas fa-check-double"></i> Mark all as read</a>
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- Filter Tabs & Actions -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 8px;">
+            <a href="notifications.php" class="btn <?= $filter === 'all' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 7px 14px; font-size: 13px;">All</a>
+            <a href="notifications.php?filter=unread" class="btn <?= $filter === 'unread' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 7px 14px; font-size: 13px;">Unread</a>
+            <a href="notifications.php?filter=booking" class="btn <?= $filter === 'booking' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 7px 14px; font-size: 13px;">Bookings</a>
+            <a href="notifications.php?filter=system" class="btn <?= $filter === 'system' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 7px 14px; font-size: 13px;">System</a>
+        </div>
+        
+        <?php if (!empty($notifications)): ?>
+            <form method="POST" style="display: inline;">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="mark_all_read">
+                <button type="submit" class="btn btn-secondary" style="padding: 7px 14px; font-size: 13px;">
+                    <i class="fas fa-check-double"></i> Mark All as Read
+                </button>
+            </form>
         <?php endif; ?>
     </div>
     
-    <div>
-        <?php if (count($notifications) > 0): ?>
-            <?php foreach ($notifications as $notif): ?>
-                <div class="notification-item <?= $notif['is_read'] ? '' : 'unread' ?>">
-                    <div class="notification-icon" style="background: <?= $notif['type'] == 'booking' ? 'var(--info-bg)' : ($notif['type'] == 'system' ? 'var(--warning-bg)' : 'var(--success-bg)') ?>; color: <?= $notif['type'] == 'booking' ? 'var(--info)' : ($notif['type'] == 'system' ? 'var(--warning)' : 'var(--success)') ?>;">
-                        <?php if ($notif['type'] == 'booking'): ?>
-                            <i class="fas fa-calendar-check"></i>
-                        <?php elseif ($notif['type'] == 'system'): ?>
-                            <i class="fas fa-exclamation-circle"></i>
-                        <?php else: ?>
-                            <i class="fas fa-bell"></i>
-                        <?php endif; ?>
-                    </div>
-                    <div style="flex-grow: 1;">
-                        <h4 style="font-size: 15px; margin-bottom: 4px; color: var(--dark-gray);"><?= htmlspecialchars($notif['title']) ?></h4>
-                        <p style="font-size: 14px; color: var(--medium-gray); margin-bottom: 4px;"><?= htmlspecialchars($notif['message']) ?></p>
-                        <span style="font-size: 11px; color: var(--medium-gray);"><i class="far fa-clock"></i> <?= date('d M Y, h:i A', strtotime($notif['created_at'])) ?></span>
-                    </div>
-                    <?php if (!$notif['is_read']): ?>
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--main-pink); margin-top: 8px;"></div>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
+    <!-- Notification List Card -->
+    <div class="detail-card" style="padding: 0; overflow: hidden;">
+        <div class="table-header-bar" style="border-radius: 0;">
+            <h3 class="table-header-title">
+                <i class="fas fa-bell"></i> Notifications (<?= count($notifications) ?>)
+            </h3>
+        </div>
+        
+        <?php if (empty($notifications)): ?>
+            <div style="text-align: center; padding: 48px 20px; color: #9E9E9E;">
+                <i class="fas fa-bell-slash" style="font-size: 40px; color: var(--parent-pastel-pink); margin-bottom: 12px; display: block;"></i>
+                <h4 style="margin: 0 0 6px 0; color: #212121;">No Notifications</h4>
+                <p style="margin: 0; font-size: 14px;">You have no unread notifications or system alerts at this moment.</p>
+            </div>
         <?php else: ?>
-            <div style="text-align: center; padding: var(--space-3xl) var(--space-md);">
-                <div style="font-size: 48px; color: var(--light-pink); margin-bottom: var(--space-md);">
-                    <i class="fas fa-bell-slash"></i>
-                </div>
-                <p style="color: var(--medium-gray);">You have no notifications yet.</p>
+            <div style="display: flex; flex-direction: column;">
+                <?php foreach($notifications as $n): ?>
+                    <div class="notif-item <?= !$n['is_read'] ? 'unread' : '' ?>">
+                        <div class="notif-icon">
+                            <?php if ($n['type'] === 'booking'): ?>
+                                <i class="fas fa-calendar-check"></i>
+                            <?php elseif ($n['type'] === 'review'): ?>
+                                <i class="fas fa-star"></i>
+                            <?php elseif ($n['type'] === 'payment'): ?>
+                                <i class="fas fa-receipt"></i>
+                            <?php else: ?>
+                                <i class="fas fa-bell"></i>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="notif-body">
+                            <h4 class="notif-title">
+                                <?= htmlspecialchars($n['title']) ?>
+                                <?php if (!$n['is_read']): ?>
+                                    <span style="display: inline-block; width: 8px; height: 8px; background: var(--parent-pink); border-radius: 50%; margin-left: 6px;"></span>
+                                <?php endif; ?>
+                            </h4>
+                            <div class="notif-desc"><?= htmlspecialchars($n['message']) ?></div>
+                            <div class="notif-time"><i class="far fa-clock"></i> <?= formatDate($n['created_at'], 'd M Y, h:i A') ?></div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <?php if ($n['link']): ?>
+                                <a href="<?= htmlspecialchars($n['link']) ?>" class="btn-icon btn-icon-view" title="Open Link">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            <?php endif; ?>
+                            
+                            <form method="POST" style="display: inline;" onsubmit="return confirm('Delete notification?');">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="notif_id" value="<?= $n['id'] ?>">
+                                <button type="submit" class="btn-icon btn-icon-delete" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
     </div>

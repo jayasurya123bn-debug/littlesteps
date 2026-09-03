@@ -1,6 +1,6 @@
 <?php
 /**
- * Caregivers / Staff Management
+ * Provider Caregivers & Staff Management
  * Little Steps Childcare Platform
  */
 require_once __DIR__ . '/../config/session.php';
@@ -14,131 +14,169 @@ $pageTitle = 'Caregivers';
 $conn = getDBConnection();
 $providerId = $_SESSION['user_id'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!verifyCSRFToken($_POST['csrf_token'])) {
-        setFlashMessage('error', "Invalid request token.");
-    } else {
-        if (isset($_POST['action']) && $_POST['action'] === 'add') {
-            $firstName = sanitizeInput($conn, $_POST['first_name']);
-            $lastName = sanitizeInput($conn, $_POST['last_name']);
-            $qualification = sanitizeInput($conn, $_POST['qualification']);
-            
-            $insStmt = $conn->prepare("INSERT INTO caregivers (provider_id, first_name, last_name, qualification, status, background_verified) VALUES (?, ?, ?, ?, 'active', 0)");
-            $insStmt->bind_param("isss", $providerId, $firstName, $lastName, $qualification);
-            
-            if ($insStmt->execute()) {
-                setFlashMessage('success', 'Caregiver added successfully.');
-            } else {
-                setFlashMessage('error', 'Failed to add caregiver.');
-            }
-        } elseif (isset($_POST['action']) && $_POST['action'] === 'delete') {
-            $cgId = (int)$_POST['caregiver_id'];
-            $delStmt = $conn->prepare("UPDATE caregivers SET status = 'inactive' WHERE id = ? AND provider_id = ?");
-            $delStmt->bind_param("ii", $cgId, $providerId);
-            $delStmt->execute();
-            setFlashMessage('success', 'Caregiver removed.');
+// Handle Actions (Delete / Toggle Status)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['caregiver_id'])) {
+    if (verifyCSRFToken($_POST['csrf_token'])) {
+        $cgId   = (int)$_POST['caregiver_id'];
+        $action = $_POST['action'];
+
+        if ($action === 'delete') {
+            $stmt = $conn->prepare("DELETE FROM caregivers WHERE id = ? AND provider_id = ?");
+            $stmt->bind_param("ii", $cgId, $providerId);
+            $stmt->execute();
+            setFlashMessage('success', 'Caregiver record removed.');
+        } elseif ($action === 'toggle_status') {
+            $newStatus = sanitizeInput($conn, $_POST['new_status']);
+            $stmt = $conn->prepare("UPDATE caregivers SET status = ? WHERE id = ? AND provider_id = ?");
+            $stmt->bind_param("sii", $newStatus, $cgId, $providerId);
+            $stmt->execute();
+            setFlashMessage('success', 'Caregiver status updated to ' . $newStatus);
         }
     }
     redirect('/provider/caregivers.php');
 }
 
-// Get caregivers
-$stmt = $conn->prepare("SELECT * FROM caregivers WHERE provider_id = ? AND status = 'active'");
-$stmt->bind_param("i", $providerId);
-$stmt->execute();
-$caregivers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+// Search and Filter
+$search       = sanitizeInput($conn, $_GET['search'] ?? '');
+$statusFilter = sanitizeInput($conn, $_GET['status'] ?? '');
+$verifyFilter = $_GET['verified'] ?? '';
+
+$sql = "SELECT * FROM caregivers WHERE provider_id = $providerId";
+if (!empty($search)) {
+    $sql .= " AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR phone LIKE '%$search%' OR qualification LIKE '%$search%')";
+}
+if (!empty($statusFilter)) {
+    $sql .= " AND status = '$statusFilter'";
+}
+if ($verifyFilter !== '') {
+    $sql .= " AND background_verified = " . (int)$verifyFilter;
+}
+$sql .= " ORDER BY created_at DESC";
+$caregivers = $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
+
 $conn->close();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
-    <h2 style="margin: 0; color: var(--dark-pink);">Your Staff</h2>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#addCaregiverModal"><i class="fas fa-plus"></i> Add Caregiver</button>
+<!-- Header Action Toolbar -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="caregivers.php" class="btn <?= empty($statusFilter) ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 8px 16px;">All Staff</a>
+        <a href="caregivers.php?status=active" class="btn <?= $statusFilter === 'active' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 8px 16px;">Active Only</a>
+    </div>
+    
+    <a href="caregiver_add.php" class="btn btn-primary" style="padding: 10px 22px; font-size: 14px;">
+        <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Add New Caregiver
+    </a>
 </div>
 
-<div class="caregiver-grid">
-    <?php if (count($caregivers) > 0): ?>
-        <?php foreach ($caregivers as $cg): ?>
-            <div class="caregiver-card">
-                <div class="caregiver-photo">
-                    <i class="fas fa-user" style="font-size: 64px; color: var(--main-pink); opacity: 0.5;"></i>
-                    <?php if ($cg['background_verified']): ?>
-                        <div style="position: absolute; bottom: 8px; right: 8px; background: var(--success); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid white;" title="Background Verified">
-                            <i class="fas fa-check"></i>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <div style="padding: var(--space-md);">
-                    <h4 style="margin-bottom: 4px; font-size: 16px;"><?= htmlspecialchars($cg['first_name'] . ' ' . $cg['last_name']) ?></h4>
-                    <p style="color: var(--medium-gray); font-size: 13px; margin-bottom: var(--space-md);">
-                        <i class="fas fa-graduation-cap"></i> <?= htmlspecialchars($cg['qualification'] ?: 'Not specified') ?>
-                    </p>
-                    
-                    <div style="display: flex; gap: var(--space-sm);">
-                        <button class="btn btn-sm btn-outline" style="flex: 1;" onclick="alert('Edit functionality would open a modal here')">Edit</button>
-                        <form method="POST" action="caregivers.php" style="flex: 1;" onsubmit="return confirm('Remove this caregiver?');">
-                            <?php csrfField(); ?>
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="caregiver_id" value="<?= $cg['id'] ?>">
-                            <button type="submit" class="btn btn-sm btn-outline" style="width: 100%; color: var(--danger); border-color: var(--danger);">Remove</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div style="grid-column: 1 / -1;" class="card text-center">
-            <div style="padding: var(--space-2xl) 0;">
-                <div style="font-size: 48px; color: var(--light-pink); margin-bottom: var(--space-md);">
-                    <i class="fas fa-users-slash"></i>
-                </div>
-                <h3>No Caregivers Added</h3>
-                <p style="color: var(--medium-gray); margin-bottom: var(--space-md);">Add your staff to build trust with parents.</p>
-                <button class="btn btn-primary" data-toggle="modal" data-target="#addCaregiverModal">Add First Caregiver</button>
-            </div>
+<!-- Filter Card -->
+<div class="filter-card">
+    <form method="GET" class="filter-form">
+        <div style="flex: 2; min-width: 200px;">
+            <input type="text" name="search" class="filter-input" style="width: 100%;" placeholder="Search by name, phone, or degree..." value="<?= htmlspecialchars($search) ?>">
         </div>
-    <?php endif; ?>
+        
+        <div>
+            <select name="verified" class="filter-input">
+                <option value="">All Verification</option>
+                <option value="1" <?= $verifyFilter === '1' ? 'selected' : '' ?>>✓ Background Verified</option>
+                <option value="0" <?= $verifyFilter === '0' ? 'selected' : '' ?>>Pending Verification</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="padding: 9px 18px;">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        
+        <?php if(!empty($search) || $verifyFilter !== '' || !empty($statusFilter)): ?>
+            <a href="caregivers.php" class="btn btn-secondary" style="padding: 9px 14px;">Reset</a>
+        <?php endif; ?>
+    </form>
 </div>
 
-<!-- Add Caregiver Modal -->
-<div class="modal-overlay" id="addCaregiverModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span>Add New Caregiver</span>
-            <button class="modal-close" data-dismiss="modal"><i class="fas fa-times"></i></button>
-        </div>
-        <form method="POST" action="caregivers.php" class="needs-validation">
-            <?php csrfField(); ?>
-            <input type="hidden" name="action" value="add">
-            
-            <div class="modal-body">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
-                    <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" name="first_name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" name="last_name" class="form-control" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Qualifications / Certifications</label>
-                    <input type="text" name="qualification" class="form-control" placeholder="e.g. Early Childhood Education, CPR Certified" required>
-                </div>
-                
-                <div class="alert alert-info" style="font-size: 13px; margin-top: var(--space-md);">
-                    <i class="fas fa-info-circle"></i> Caregivers must pass a background check to receive the verified badge.
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Add Caregiver</button>
-            </div>
-        </form>
+<!-- Staff Table -->
+<div class="provider-table-card">
+    <div class="provider-table-header">
+        <h3><i class="fas fa-user-nurse" style="margin-right: 6px;"></i> Daycare Staff & Babysitters (<?= count($caregivers) ?>)</h3>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="provider-table">
+            <thead>
+                <tr>
+                    <th>Caregiver</th>
+                    <th>Contact</th>
+                    <th>Qualification</th>
+                    <th>Experience</th>
+                    <th>Specialization</th>
+                    <th>Verification</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($caregivers)): ?>
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 36px; color: #9E9E9E;">
+                            No caregivers added yet. Click "Add New Caregiver" to list staff.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach($caregivers as $cg): ?>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($cg['first_name'] . ' ' . $cg['last_name']) ?>&size=64&background=FFF0F5&color=E91E63" 
+                                         style="width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--provider-pastel-pink);" alt="Staff">
+                                    <div>
+                                        <strong><?= htmlspecialchars($cg['first_name'] . ' ' . $cg['last_name']) ?></strong>
+                                        <div style="font-size: 11px; color: #757575;"><?= htmlspecialchars($cg['gender'] ?? 'Caregiver') ?></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div><i class="fas fa-phone" style="color: var(--provider-pink); font-size: 11px;"></i> <?= htmlspecialchars($cg['phone'] ?? 'N/A') ?></div>
+                                <div style="font-size: 12px; color: #757575;"><?= htmlspecialchars($cg['email'] ?? '') ?></div>
+                            </td>
+                            <td><strong><?= htmlspecialchars($cg['qualification']) ?></strong></td>
+                            <td><?= $cg['experience_years'] ?> Years</td>
+                            <td>
+                                <span class="badge badge-pink" style="font-size: 11px;">
+                                    <?= htmlspecialchars($cg['specialization'] ?? 'Childcare') ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-<?= $cg['background_verified'] ? 'approved' : 'pending' ?>">
+                                    <?= $cg['background_verified'] ? '✓ Verified' : 'Pending' ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-<?= htmlspecialchars($cg['status']) ?>">
+                                    <?= htmlspecialchars($cg['status']) ?>
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="btn-group-action">
+                                    <a href="caregiver_add.php?id=<?= $cg['id'] ?>" class="btn-icon btn-icon-edit" title="Edit Details">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" style="display: inline;" onsubmit="return confirm('Remove caregiver record?');">
+                                        <?= csrfField() ?>
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="caregiver_id" value="<?= $cg['id'] ?>">
+                                        <button type="submit" class="btn-icon btn-icon-delete" title="Delete Caregiver">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 

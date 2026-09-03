@@ -2,6 +2,7 @@
 /**
  * Parent Booking History
  * Little Steps Childcare Platform
+ * Filterable Completed & Cancelled Bookings with Re-book Action
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
@@ -14,148 +15,144 @@ $pageTitle = 'Booking History';
 $conn = getDBConnection();
 $userId = $_SESSION['user_id'];
 
-// Get Past Bookings (Completed or Cancelled)
-$stmt = $conn->prepare("
+// Filters
+$statusFilter = sanitizeInput($conn, $_GET['status'] ?? 'all');
+$search       = sanitizeInput($conn, $_GET['search'] ?? '');
+
+$sql = "
     SELECT b.*, c.name as center_name, c.area, c.city,
            (SELECT COUNT(*) FROM reviews r WHERE r.booking_id = b.id) as has_review
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    WHERE b.user_id = ? AND (b.status IN ('completed', 'cancelled', 'no_show') OR (b.status = 'confirmed' AND b.end_datetime < NOW()))
-    ORDER BY b.start_datetime DESC
-");
+    WHERE b.user_id = ? AND b.status IN ('completed', 'cancelled', 'no_show')
+";
+
+if ($statusFilter !== 'all' && !empty($statusFilter)) {
+    $sql .= " AND b.status = '$statusFilter'";
+}
+if (!empty($search)) {
+    $sql .= " AND (b.booking_code LIKE '%$search%' OR b.child_name LIKE '%$search%' OR c.name LIKE '%$search%')";
+}
+
+$sql .= " ORDER BY b.start_datetime DESC";
+
+$stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $bookings = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
 $conn->close();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="card" style="padding: 0; overflow: hidden;">
-    <div class="table-container" style="box-shadow: none;">
-        <table class="table">
+<!-- Filter Toolbar -->
+<div class="filter-card">
+    <form method="GET" class="filter-form">
+        <div style="flex: 2; min-width: 200px;">
+            <input type="text" name="search" class="filter-input" style="width: 100%;" placeholder="Search by booking code, center, or child..." value="<?= htmlspecialchars($search) ?>">
+        </div>
+        
+        <div>
+            <select name="status" class="filter-input">
+                <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>All Historical Statuses</option>
+                <option value="completed" <?= $statusFilter === 'completed' ? 'selected' : '' ?>>✓ Completed Sessions</option>
+                <option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>✕ Cancelled</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="padding: 9px 18px;">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        
+        <?php if($statusFilter !== 'all' || !empty($search)): ?>
+            <a href="booking_history.php" class="btn btn-secondary" style="padding: 9px 14px;">Reset</a>
+        <?php endif; ?>
+        
+        <button type="button" onclick="window.print()" class="btn btn-secondary" style="margin-left: auto; padding: 9px 16px;">
+            <i class="fas fa-print"></i> Print Statement
+        </button>
+    </form>
+</div>
+
+<!-- History Table -->
+<div class="table-container">
+    <div class="table-header-bar">
+        <h3 class="table-header-title">
+            <i class="fas fa-history"></i> Past Childcare Sessions (<?= count($bookings) ?>)
+        </h3>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Center</th>
+                    <th>Code</th>
+                    <th>Daycare Center</th>
                     <th>Child</th>
-                    <th>Date & Time</th>
-                    <th>Total Price</th>
+                    <th>Session Date</th>
+                    <th>Amount</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (count($bookings) > 0): ?>
-                    <?php foreach ($bookings as $booking): ?>
-                        <?php 
-                        $actualStatus = $booking['status'];
-                        if ($actualStatus == 'confirmed' && strtotime($booking['end_datetime']) < time()) {
-                            $actualStatus = 'completed';
-                        }
-                        ?>
+                <?php if (empty($bookings)): ?>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 48px 0; color: #9E9E9E;">
+                            <i class="fas fa-history" style="font-size: 36px; color: var(--parent-pastel-pink); margin-bottom: 10px; display: block;"></i>
+                            No past bookings found matching your search.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($bookings as $b): ?>
                         <tr>
                             <td>
-                                <strong style="color: var(--dark-gray);"><?= htmlspecialchars($booking['center_name']) ?></strong><br>
-                                <span style="font-size: 12px; color: var(--medium-gray);"><?= htmlspecialchars($booking['area']) ?></span>
+                                <strong style="color: var(--parent-pink);"><?= htmlspecialchars($b['booking_code']) ?></strong>
                             </td>
                             <td>
-                                <?= htmlspecialchars($booking['child_name']) ?><br>
-                                <span style="font-size: 12px; color: var(--medium-gray);"><?= round($booking['child_age_months'] / 12, 1) ?> yrs</span>
+                                <strong><?= htmlspecialchars($b['center_name']) ?></strong><br>
+                                <span style="font-size: 12px; color: #757575;"><?= htmlspecialchars($b['area'] . ', ' . $b['city']) ?></span>
                             </td>
                             <td>
-                                <?= date('d M Y', strtotime($booking['start_datetime'])) ?><br>
-                                <span style="font-size: 12px; color: var(--medium-gray);">
-                                    <?= date('h:i A', strtotime($booking['start_datetime'])) ?> - <?= date('h:i A', strtotime($booking['end_datetime'])) ?>
+                                <strong><?= htmlspecialchars($b['child_name']) ?></strong><br>
+                                <span style="font-size: 11px; color: #757575;"><?= $b['child_age_months'] ?> months</span>
+                            </td>
+                            <td>
+                                <div><strong><?= formatDate($b['start_datetime'], 'd M Y') ?></strong></div>
+                                <div style="font-size: 11px; color: #757575;">
+                                    <?= date('h:i A', strtotime($b['start_datetime'])) ?> - <?= date('h:i A', strtotime($b['end_datetime'])) ?>
+                                </div>
+                            </td>
+                            <td>
+                                <strong><?= formatCurrency($b['final_amount']) ?></strong>
+                            </td>
+                            <td>
+                                <span class="badge badge-<?= htmlspecialchars($b['status']) ?>">
+                                    <?= htmlspecialchars($b['status']) ?>
                                 </span>
                             </td>
-                            <td>
-                                <strong><?= formatCurrency($booking['final_amount']) ?></strong>
-                            </td>
-                            <td>
-                                <?php if ($actualStatus == 'completed'): ?>
-                                    <span class="badge badge-success" style="background: #E8F5E9; color: #2E7D32;">Completed</span>
-                                <?php elseif ($actualStatus == 'cancelled'): ?>
-                                    <span class="badge badge-default">Cancelled</span>
-                                <?php elseif ($actualStatus == 'rejected'): ?>
-                                    <span class="badge badge-danger">Rejected</span>
-                                <?php else: ?>
-                                    <span class="badge badge-info"><?= ucfirst($actualStatus) ?></span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="booking_create.php?center_id=<?= $booking['center_id'] ?>" class="btn btn-sm btn-outline" title="Book Again"><i class="fas fa-redo"></i> Rebook</a>
+                            <td style="text-align: right;">
+                                <div class="btn-group-action">
+                                    <!-- Re-book CTA -->
+                                    <a href="booking_create.php?center_id=<?= $b['center_id'] ?>" class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" title="Book Again">
+                                        <i class="fas fa-redo"></i> Re-book
+                                    </a>
                                     
-                                    <?php if ($actualStatus == 'completed' && !$booking['has_review']): ?>
-                                        <button class="btn btn-sm btn-primary" onclick="openReviewModal(<?= $booking['id'] ?>, <?= $booking['center_id'] ?>, '<?= htmlspecialchars(addslashes($booking['center_name'])) ?>')" title="Leave Review"><i class="fas fa-star"></i> Review</button>
+                                    <!-- Review CTA if completed and not reviewed yet -->
+                                    <?php if ($b['status'] === 'completed' && $b['has_review'] == 0): ?>
+                                        <a href="reviews.php?booking_id=<?= $b['id'] ?>&center_id=<?= $b['center_id'] ?>" class="btn btn-secondary" style="padding: 5px 12px; font-size: 12px;" title="Write Review">
+                                            <i class="fas fa-star"></i> Review
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: var(--space-2xl) 0;">
-                            <p style="color: var(--medium-gray);">You have no past bookings.</p>
-                        </td>
-                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
-
-<!-- Review Modal -->
-<div class="modal-overlay" id="reviewModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span>Write a Review</span>
-            <button class="modal-close" data-dismiss="modal"><i class="fas fa-times"></i></button>
-        </div>
-        <form method="POST" action="reviews.php">
-            <?php csrfField(); ?>
-            <input type="hidden" name="booking_id" id="review_booking_id">
-            <input type="hidden" name="center_id" id="review_center_id">
-            <input type="hidden" name="action" value="create">
-            
-            <div class="modal-body">
-                <p style="margin-bottom: var(--space-sm);">How was your experience at <strong id="review_center_name"></strong>?</p>
-                
-                <div class="form-group text-center">
-                    <div class="star-rating-input" style="justify-content: center; margin-bottom: var(--space-sm);">
-                        <input type="radio" id="star5" name="rating" value="5" required />
-                        <label for="star5"></label>
-                        <input type="radio" id="star4" name="rating" value="4" />
-                        <label for="star4"></label>
-                        <input type="radio" id="star3" name="rating" value="3" />
-                        <label for="star3"></label>
-                        <input type="radio" id="star2" name="rating" value="2" />
-                        <label for="star2"></label>
-                        <input type="radio" id="star1" name="rating" value="1" />
-                        <label for="star1"></label>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Your Review</label>
-                    <textarea name="comment" class="form-control" rows="4" placeholder="Tell us about the care, facilities, and staff..." required></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function openReviewModal(bookingId, centerId, centerName) {
-    document.getElementById('review_booking_id').value = bookingId;
-    document.getElementById('review_center_id').value = centerId;
-    document.getElementById('review_center_name').textContent = centerName;
-    document.getElementById('reviewModal').classList.add('active');
-}
-</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

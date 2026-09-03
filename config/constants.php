@@ -5,7 +5,14 @@
  */
 
 // Site URL - Change this based on your environment
-define('SITE_URL', 'http://localhost/little-steps');
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+
+if ($host === 'localhost' || $host === '127.0.0.1') {
+    define('SITE_URL', 'http://localhost/little-steps');
+} else {
+    define('SITE_URL', $protocol . '://' . $host);
+}
 
 // Application Info
 define('APP_NAME', 'Little Steps');

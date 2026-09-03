@@ -1,206 +1,270 @@
 <?php
 /**
- * Provider Bookings Management (Kanban Board)
+ * Provider Bookings Management
  * Little Steps Childcare Platform
+ * Status-Based Action Modals & Full Oversight
  */
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/functions.php';
 requireRole('provider');
 
-$pageTitleHeader = 'Bookings & Requests';
+$pageTitleHeader = 'Booking Requests';
 $pageTitle = 'Bookings';
 
 $conn = getDBConnection();
 $providerId = $_SESSION['user_id'];
 
-// Get center ID
-$stmt = $conn->prepare("SELECT id FROM daycare_centers WHERE provider_id = ? LIMIT 1");
-$stmt->bind_param("i", $providerId);
-$stmt->execute();
-$centerResult = $stmt->get_result();
-$centerId = $centerResult->num_rows > 0 ? $centerResult->fetch_assoc()['id'] : 0;
-
-// Handle Actions (Approve/Reject/Complete)
+// Handle Actions (Accept, Reject, Complete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['booking_id'])) {
     if (verifyCSRFToken($_POST['csrf_token'])) {
         $bookingId = (int)$_POST['booking_id'];
-        $action = $_POST['action'];
-        $newStatus = '';
-        
-        switch ($action) {
-            case 'approve': $newStatus = 'confirmed'; break;
-            case 'reject': $newStatus = 'rejected'; break;
-            case 'start': $newStatus = 'in_progress'; break;
-            case 'complete': $newStatus = 'completed'; break;
-        }
-        
-        if ($newStatus) {
-            $updStmt = $conn->prepare("UPDATE bookings SET status = ? WHERE id = ? AND center_id = ?");
-            $updStmt->bind_param("sii", $newStatus, $bookingId, $centerId);
-            if ($updStmt->execute()) {
-                setFlashMessage('success', "Booking marked as $newStatus.");
-            } else {
-                setFlashMessage('error', 'Failed to update booking status.');
-            }
+        $action    = $_POST['action'];
+
+        if ($action === 'accept') {
+            $stmt = $conn->prepare("
+                UPDATE bookings b
+                JOIN daycare_centers c ON b.center_id = c.id
+                SET b.status = 'confirmed'
+                WHERE b.id = ? AND c.provider_id = ?
+            ");
+            $stmt->bind_param("ii", $bookingId, $providerId);
+            $stmt->execute();
+
+            // Send notification to parent
+            $notif = $conn->prepare("
+                INSERT INTO notifications (user_id, title, message, type, link)
+                SELECT b.user_id, 'Booking Accepted! 🌟', 'Your childcare booking has been accepted by the provider.', 'booking', 'bookings.php'
+                FROM bookings b WHERE b.id = ?
+            ");
+            $notif->bind_param("i", $bookingId);
+            $notif->execute();
+
+            setFlashMessage('success', 'Booking accepted and confirmed.');
+
+        } elseif ($action === 'reject') {
+            $reason = sanitizeInput($conn, $_POST['rejection_reason'] ?? 'Capacity limit reached');
+            $stmt = $conn->prepare("
+                UPDATE bookings b
+                JOIN daycare_centers c ON b.center_id = c.id
+                SET b.status = 'cancelled', b.cancellation_reason = ?, b.cancelled_by = 'provider', b.cancelled_at = NOW()
+                WHERE b.id = ? AND c.provider_id = ?
+            ");
+            $stmt->bind_param("sii", $reason, $bookingId, $providerId);
+            $stmt->execute();
+            setFlashMessage('warning', 'Booking request rejected.');
+
+        } elseif ($action === 'complete') {
+            $stmt = $conn->prepare("
+                UPDATE bookings b
+                JOIN daycare_centers c ON b.center_id = c.id
+                SET b.status = 'completed'
+                WHERE b.id = ? AND c.provider_id = ?
+            ");
+            $stmt->bind_param("ii", $bookingId, $providerId);
+            $stmt->execute();
+            setFlashMessage('success', 'Childcare session marked as completed.');
         }
     }
     redirect('/provider/bookings.php');
 }
 
-// Fetch all bookings for the center
-$bookings = ['pending' => [], 'confirmed' => [], 'in_progress' => []];
+// Filters
+$statusFilter = sanitizeInput($conn, $_GET['status'] ?? 'all');
+$search       = sanitizeInput($conn, $_GET['search'] ?? '');
 
-if ($centerId > 0) {
-    $bookStmt = $conn->prepare("
-        SELECT b.*, u.first_name, u.last_name, u.phone 
-        FROM bookings b
-        JOIN users u ON b.parent_id = u.id
-        WHERE b.center_id = ? AND b.status IN ('pending', 'confirmed', 'in_progress')
-        ORDER BY b.start_time ASC
-    ");
-    $bookStmt->bind_param("i", $centerId);
-    $bookStmt->execute();
-    $result = $bookStmt->get_result();
-    
-    while ($row = $result->fetch_assoc()) {
-        $bookings[$row['status']][] = $row;
-    }
+$sql = "
+    SELECT b.*, u.first_name, u.last_name, u.phone as parent_phone, u.email as parent_email,
+           c.name as center_name
+    FROM bookings b
+    JOIN daycare_centers c ON b.center_id = c.id
+    JOIN users u ON b.user_id = u.id
+    WHERE c.provider_id = $providerId
+";
+
+if ($statusFilter !== 'all' && !empty($statusFilter)) {
+    $sql .= " AND b.status = '$statusFilter'";
 }
+if (!empty($search)) {
+    $sql .= " AND (b.booking_code LIKE '%$search%' OR b.child_name LIKE '%$search%' OR u.first_name LIKE '%$search%' OR u.last_name LIKE '%$search%')";
+}
+
+$sql .= " ORDER BY (CASE WHEN b.status = 'pending' THEN 0 ELSE 1 END), b.created_at DESC";
+$bookings = $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
+
 $conn->close();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<?php if ($centerId == 0): ?>
-    <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle"></i> You must <a href="center_profile.php" style="font-weight: 600;">create a center profile</a> before managing bookings.
-    </div>
-<?php else: ?>
-
-    <div class="kanban-board">
-        <!-- New Requests -->
-        <div class="kanban-column">
-            <div class="kanban-column-header">
-                New Requests
-                <span class="kanban-count"><?= count($bookings['pending']) ?></span>
-            </div>
-            
-            <?php foreach ($bookings['pending'] as $b): ?>
-                <div class="booking-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 15px;">
-                            <a href="booking_details.php?id=<?= $b['id'] ?>" style="color: var(--dark-gray);"><?= htmlspecialchars($b['child_name']) ?> (<?= $b['child_age'] ?>y)</a>
-                        </h4>
-                        <span style="font-size: 11px; color: var(--medium-gray);"><?= date('d M', strtotime($b['start_time'])) ?></span>
-                    </div>
-                    
-                    <p style="font-size: 12px; color: var(--medium-gray); margin-bottom: 8px;">
-                        <i class="fas fa-user-circle"></i> <?= htmlspecialchars($b['first_name'] . ' ' . $b['last_name']) ?>
-                    </p>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--light-pink); padding-top: 8px; margin-top: 8px;">
-                        <div style="font-size: 12px; font-weight: 600; color: var(--dark-pink);">
-                            <?= date('h:i A', strtotime($b['start_time'])) ?>
-                        </div>
-                        <div style="display: flex; gap: 4px;">
-                            <form method="POST" action="bookings.php" style="display: inline;">
-                                <?php csrfField(); ?>
-                                <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
-                                <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn btn-sm btn-success" title="Approve"><i class="fas fa-check"></i></button>
-                            </form>
-                            <form method="POST" action="bookings.php" style="display: inline;" onsubmit="return confirm('Reject this request?');">
-                                <?php csrfField(); ?>
-                                <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
-                                <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn btn-sm btn-danger" title="Reject"><i class="fas fa-times"></i></button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+<!-- Filter Toolbar -->
+<div class="filter-card">
+    <form method="GET" class="filter-form">
+        <div style="flex: 2; min-width: 200px;">
+            <input type="text" name="search" class="filter-input" style="width: 100%;" placeholder="Search code, child name, or parent..." value="<?= htmlspecialchars($search) ?>">
         </div>
         
-        <!-- Confirmed / Upcoming -->
-        <div class="kanban-column">
-            <div class="kanban-column-header">
-                Confirmed / Upcoming
-                <span class="kanban-count"><?= count($bookings['confirmed']) ?></span>
-            </div>
-            
-            <?php foreach ($bookings['confirmed'] as $b): 
-                $isToday = date('Y-m-d', strtotime($b['start_time'])) === date('Y-m-d');
-            ?>
-                <div class="booking-card <?= $isToday ? 'priority-high' : '' ?>">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 15px;">
-                            <a href="booking_details.php?id=<?= $b['id'] ?>" style="color: var(--dark-gray);"><?= htmlspecialchars($b['child_name']) ?></a>
-                        </h4>
-                        <?php if ($isToday): ?>
-                            <span class="badge badge-warning" style="font-size: 10px;">Today</span>
-                        <?php else: ?>
-                            <span style="font-size: 11px; color: var(--medium-gray);"><?= date('d M', strtotime($b['start_time'])) ?></span>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <p style="font-size: 12px; color: var(--medium-gray); margin-bottom: 8px;">
-                        <i class="fas fa-clock"></i> <?= date('h:i A', strtotime($b['start_time'])) ?> to <?= date('h:i A', strtotime($b['end_time'])) ?>
-                    </p>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--light-pink); padding-top: 8px; margin-top: 8px;">
-                        <div style="font-size: 12px;">
-                            <?= formatCurrency($b['total_price']) ?>
-                        </div>
-                        <?php if ($isToday): ?>
-                            <form method="POST" action="bookings.php" style="display: inline;">
-                                <?php csrfField(); ?>
-                                <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
-                                <input type="hidden" name="action" value="start">
-                                <button type="submit" class="btn btn-sm btn-info" style="font-size: 11px;">Check-in</button>
-                            </form>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        <div>
+            <select name="status" class="filter-input">
+                <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>All Requests</option>
+                <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>🟡 Pending (Action Required)</option>
+                <option value="confirmed" <?= $statusFilter === 'confirmed' ? 'selected' : '' ?>>🟢 Confirmed</option>
+                <option value="completed" <?= $statusFilter === 'completed' ? 'selected' : '' ?>>✓ Completed</option>
+                <option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>✕ Cancelled</option>
+            </select>
         </div>
         
-        <!-- Active / In Progress -->
-        <div class="kanban-column">
-            <div class="kanban-column-header">
-                In Progress (Active)
-                <span class="kanban-count"><?= count($bookings['in_progress']) ?></span>
+        <button type="submit" class="btn btn-primary" style="padding: 9px 18px;">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        
+        <?php if($statusFilter !== 'all' || !empty($search)): ?>
+            <a href="bookings.php" class="btn btn-secondary" style="padding: 9px 14px;">Reset</a>
+        <?php endif; ?>
+    </form>
+</div>
+
+<!-- Bookings Table -->
+<div class="provider-table-card">
+    <div class="provider-table-header">
+        <h3><i class="fas fa-calendar-check" style="margin-right: 6px;"></i> Incoming & Scheduled Bookings (<?= count($bookings) ?>)</h3>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="provider-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Parent</th>
+                    <th>Child (Age)</th>
+                    <th>Center</th>
+                    <th>Date & Time</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($bookings)): ?>
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 36px; color: #9E9E9E;">
+                            No booking requests found matching criteria.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach($bookings as $b): ?>
+                        <tr style="<?= $b['status'] === 'pending' ? 'background: #FFFDE7;' : '' ?>">
+                            <td>
+                                <strong style="color: var(--provider-pink);"><?= htmlspecialchars($b['booking_code']) ?></strong>
+                            </td>
+                            <td>
+                                <strong><?= htmlspecialchars($b['first_name'] . ' ' . $b['last_name']) ?></strong>
+                                <div style="font-size: 11px; color: #757575;"><?= htmlspecialchars($b['parent_phone'] ?? 'N/A') ?></div>
+                            </td>
+                            <td>
+                                <strong><?= htmlspecialchars($b['child_name']) ?></strong>
+                                <div style="font-size: 11px; color: #757575;"><?= $b['child_age_months'] ?> mo • <?= htmlspecialchars($b['child_gender']) ?></div>
+                            </td>
+                            <td><?= htmlspecialchars($b['center_name']) ?></td>
+                            <td>
+                                <div><strong><?= formatDate($b['start_datetime'], 'd M Y') ?></strong></div>
+                                <div style="font-size: 11px; color: #757575;">
+                                    <?= date('h:i A', strtotime($b['start_datetime'])) ?> - <?= date('h:i A', strtotime($b['end_datetime'])) ?>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-pink" style="font-size: 11px; text-transform: uppercase;">
+                                    <?= htmlspecialchars($b['booking_type']) ?>
+                                </span>
+                            </td>
+                            <td><strong><?= formatCurrency($b['final_amount']) ?></strong></td>
+                            <td>
+                                <span class="badge badge-<?= htmlspecialchars($b['status']) ?>">
+                                    <?= htmlspecialchars($b['status']) ?>
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="btn-group-action">
+                                    <!-- Pending Actions: Accept or Reject -->
+                                    <?php if ($b['status'] === 'pending'): ?>
+                                        <form method="POST" style="display: inline;">
+                                            <?= csrfField() ?>
+                                            <input type="hidden" name="action" value="accept">
+                                            <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
+                                            <button type="submit" class="btn btn-success" style="padding: 5px 12px; font-size: 12px;" title="Accept Booking">
+                                                <i class="fas fa-check"></i> Accept
+                                            </button>
+                                        </form>
+                                        
+                                        <button type="button" class="btn btn-danger" style="padding: 5px 12px; font-size: 12px;" onclick="openRejectModal('<?= $b['id'] ?>', '<?= htmlspecialchars($b['booking_code']) ?>')">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    
+                                    <!-- Confirmed Action: Mark Complete -->
+                                    <?php elseif ($b['status'] === 'confirmed' || $b['status'] === 'in_progress'): ?>
+                                        <form method="POST" style="display: inline;" onsubmit="return confirm('Mark this childcare session as completed?');">
+                                            <?= csrfField() ?>
+                                            <input type="hidden" name="action" value="complete">
+                                            <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
+                                            <button type="submit" class="btn btn-primary" style="padding: 5px 12px; font-size: 12px;" title="Complete Session">
+                                                <i class="fas fa-check-double"></i> Complete
+                                            </button>
+                                        </form>
+                                    
+                                    <?php else: ?>
+                                        <span style="font-size: 12px; color: #9E9E9E;">Closed</span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>Reject Booking Request</h3>
+            <button type="button" class="modal-close-btn" onclick="closeRejectModal()">&times;</button>
+        </div>
+        <form method="POST">
+            <?= csrfField() ?>
+            <input type="hidden" name="action" value="reject">
+            <input type="hidden" name="booking_id" id="rejectBookingId">
+            
+            <div class="modal-body">
+                <p style="color: #424242; font-size: 14px;">
+                    Are you sure you want to reject booking <strong id="rejectCodeLabel"></strong>?
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">Reason for Rejection (Visible to Parent)</label>
+                    <textarea name="rejection_reason" class="form-control" rows="3" placeholder="e.g. Center capacity fully booked for this time slot..." required></textarea>
+                </div>
             </div>
             
-            <?php foreach ($bookings['in_progress'] as $b): ?>
-                <div class="booking-card" style="border-left-color: var(--info);">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 15px;">
-                            <a href="booking_details.php?id=<?= $b['id'] ?>" style="color: var(--dark-gray);"><?= htmlspecialchars($b['child_name']) ?></a>
-                        </h4>
-                        <span class="badge badge-info" style="font-size: 10px; background: rgba(33,150,243,0.1); color: var(--info);">Active</span>
-                    </div>
-                    
-                    <p style="font-size: 12px; color: var(--medium-gray); margin-bottom: 8px;">
-                        Parent: <?= htmlspecialchars($b['first_name'] . ' ' . $b['last_name']) ?>
-                    </p>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--light-pink); padding-top: 8px; margin-top: 8px;">
-                        <div style="font-size: 11px; color: var(--medium-gray);">
-                            Due: <?= date('h:i A', strtotime($b['end_time'])) ?>
-                        </div>
-                        <form method="POST" action="bookings.php" style="display: inline;">
-                            <?php csrfField(); ?>
-                            <input type="hidden" name="booking_id" value="<?= $b['id'] ?>">
-                            <input type="hidden" name="action" value="complete">
-                            <button type="submit" class="btn btn-sm btn-primary" style="font-size: 11px;">Check-out</button>
-                        </form>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRejectModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+            </div>
+        </form>
     </div>
+</div>
 
-<?php endif; ?>
+<script>
+function openRejectModal(id, code) {
+    document.getElementById('rejectBookingId').value = id;
+    document.getElementById('rejectCodeLabel').innerText = code;
+    document.getElementById('rejectModal').style.display = 'flex';
+}
+function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+}
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -16,7 +16,7 @@ $conn = getDBConnection();
 
 // Fetch Center Details
 $stmt = $conn->prepare("
-    SELECT c.*, p.business_name, p.pricing_hourly, p.pricing_daily, p.pricing_monthly, p.facilities, p.safety_measures 
+    SELECT c.*, p.business_name, p.owner_name, p.phone as provider_phone 
     FROM daycare_centers c 
     JOIN providers p ON c.provider_id = p.id 
     WHERE c.id = ? AND c.status = 'active'
