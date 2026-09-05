@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Provider Subscriptions Management
  * Little Steps Childcare Platform
@@ -24,7 +24,7 @@ if ($centerId > 0) {
     $subStmt = $conn->prepare("
         SELECT s.*, u.first_name, u.last_name, u.phone 
         FROM subscriptions s
-        JOIN users u ON s.parent_id = u.id
+        JOIN users u ON s.user_id = u.id
         WHERE s.center_id = ? AND s.status = 'active'
         ORDER BY s.end_date ASC
     ");

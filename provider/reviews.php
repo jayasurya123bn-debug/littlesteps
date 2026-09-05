@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Provider Reviews Management
  * Little Steps Childcare Platform
@@ -25,9 +25,9 @@ $centerId = $center['id'] ?? 0;
 $reviews = [];
 if ($centerId > 0) {
     $revStmt = $conn->prepare("
-        SELECT r.*, u.first_name, u.last_name, u.profile_photo
+        SELECT r.*, u.first_name, u.last_name, u.profile_image
         FROM reviews r
-        JOIN users u ON r.parent_id = u.id
+        JOIN users u ON r.user_id = u.id
         WHERE r.center_id = ?
         ORDER BY r.created_at DESC
     ");
@@ -84,7 +84,7 @@ require_once __DIR__ . '/includes/header.php';
                     <?php foreach ($reviews as $review): ?>
                         <div style="padding: var(--space-lg); border-bottom: 1px solid var(--light-gray);">
                             <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-sm);">
-                                <img src="<?= $review['profile_photo'] ? SITE_URL . '/' . $review['profile_photo'] : 'https://ui-avatars.com/api/?name=' . urlencode($review['first_name'].'+'.$review['last_name']) . '&background=FCE4EC&color=E91E63' ?>" alt="Parent" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                                <img src="<?= $review['profile_image'] ? SITE_URL . '/' . $review['profile_image'] : 'https://ui-avatars.com/api/?name=' . urlencode($review['first_name'].'+'.$review['last_name']) . '&background=FCE4EC&color=E91E63' ?>" alt="Parent" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
                                 
                                 <div style="flex-grow: 1;">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -100,7 +100,7 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
                             
                             <p style="margin-bottom: 0; font-size: 14px; color: var(--near-black); padding-left: 64px;">
-                                "<?= nl2br(htmlspecialchars($review['comment'])) ?>"
+                                "<?= nl2br(htmlspecialchars($review['review_text'] ?? '')) ?>"
                             </p>
                         </div>
                     <?php endforeach; ?>

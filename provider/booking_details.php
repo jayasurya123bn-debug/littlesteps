@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Booking Details (Provider)
  * Little Steps Childcare Platform
@@ -25,7 +25,7 @@ if ($centerId == 0) redirect('/provider/dashboard.php');
 $bookStmt = $conn->prepare("
     SELECT b.*, u.first_name, u.last_name, u.email, u.phone, u.address
     FROM bookings b
-    JOIN users u ON b.parent_id = u.id
+    JOIN users u ON b.user_id = u.id
     WHERE b.id = ? AND b.center_id = ?
 ");
 $bookStmt->bind_param("ii", $bookingId, $centerId);

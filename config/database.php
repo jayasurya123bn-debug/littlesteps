@@ -2,56 +2,70 @@
 /**
  * Database Connection Configuration
  * Little Steps Childcare Platform
- * Supports both local development (XAMPP) and ProFreeHost online deployment.
+ *
+ * Supports three environments automatically:
+ *  1. Railway (via MYSQLHOST / RAILWAY_ENVIRONMENT env vars)
+ *  2. Local XAMPP (localhost)
+ *  3. ProFreeHost (manual credentials below)
  */
 
-// Detect environment: local XAMPP or remote online host
-$isLocal = (
+// ──────────────────────────────────────────────
+// 1. RAILWAY DEPLOYMENT (auto-detected)
+//    Railway injects MYSQLHOST, MYSQLUSER, MYSQLPASSWORD,
+//    MYSQLDATABASE, MYSQLPORT automatically when you add
+//    a MySQL service to your Railway project.
+// ──────────────────────────────────────────────
+if (getenv('MYSQLHOST') !== false || getenv('RAILWAY_ENVIRONMENT') !== false) {
+    define('DB_HOST', getenv('MYSQLHOST') ?: 'localhost');
+    define('DB_USER', getenv('MYSQLUSER') ?: 'root');
+    define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
+    define('DB_NAME', getenv('MYSQLDATABASE') ?: 'littlesteps_db');
+    define('DB_PORT', (int)(getenv('MYSQLPORT') ?: 3306));
+
+// ──────────────────────────────────────────────
+// 2. LOCAL XAMPP
+// ──────────────────────────────────────────────
+} elseif (
     php_sapi_name() === 'cli' ||
     (isset($_SERVER['HTTP_HOST']) && in_array(explode(':', $_SERVER['HTTP_HOST'])[0], ['localhost', '127.0.0.1']))
-);
-
-if ($isLocal) {
-    // ==========================================
-    // 💻 LOCALHOST (XAMPP) CONFIGURATION
-    // ==========================================
+) {
     define('DB_HOST', 'localhost');
     define('DB_USER', 'root');
     define('DB_PASS', '');
     define('DB_NAME', 'littlesteps_db');
+    define('DB_PORT', 3306);
+
+// ──────────────────────────────────────────────
+// 3. PROFREEHOST ONLINE DEPLOYMENT (manual)
+//    Fill in cPanel → MySQL Databases details below:
+// ──────────────────────────────────────────────
 } else {
-    // ==========================================
-    // 🌐 PROFREEHOST ONLINE CONFIGURATION
-    // Fill these with details from ProFreeHost cPanel -> MySQL Databases:
-    // ==========================================
-    define('DB_HOST', 'sql200.profreehost.com');     // Replace with your MySQL Host (e.g., sql105.profreehost.com)
-    define('DB_USER', 'your_profreehost_db_user');    // Replace with your MySQL Username (e.g., ezyro_12345678)
-    define('DB_PASS', 'your_profreehost_password');   // Replace with your ProFreeHost account password
-    define('DB_NAME', 'your_profreehost_db_name');    // Replace with your Database Name (e.g., ezyro_12345678_littlesteps)
+    define('DB_HOST', 'sql200.profreehost.com');    // e.g. sql105.profreehost.com
+    define('DB_USER', 'your_profreehost_db_user');  // e.g. ezyro_12345678
+    define('DB_PASS', 'your_profreehost_password'); // Your ProFreeHost account password
+    define('DB_NAME', 'your_profreehost_db_name');  // e.g. ezyro_12345678_littlesteps
+    define('DB_PORT', 3306);
 }
 
 /**
- * Get database connection
- * @return mysqli Connection object
+ * Get database connection (singleton)
+ * @return mysqli
  */
 function getDBConnection() {
     static $conn = null;
-    
-    // If a connection is already open and alive, reuse it
+
     if ($conn !== null && $conn instanceof mysqli) {
         if (@$conn->ping()) {
             return $conn;
         }
     }
 
-    // Suppress default PHP warning so we can show friendly helpful guide
-    $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
-    // Check connection
     if ($conn->connect_error) {
         $errorMsg = htmlspecialchars($conn->connect_error);
         $isProFreeHost = (DB_USER === 'your_profreehost_db_user' || DB_NAME === 'your_profreehost_db_name');
-        
+
         die("<!DOCTYPE html>
         <html lang='en'>
         <head>
@@ -71,33 +85,31 @@ function getDBConnection() {
         </head>
         <body>
             <div class='setup-card'>
-                <h2>🌸 Little Steps Database Configuration</h2>
-                <p>The application could not establish a connection to your MySQL database on <strong>" . htmlspecialchars(DB_HOST) . "</strong>.</p>
+                <h2>🌸 Little Steps — Database Error</h2>
+                <p>Could not connect to MySQL on <strong>" . htmlspecialchars(DB_HOST) . "</strong>.</p>
                 <div class='box'>Error: {$errorMsg}</div>
-                
                 " . ($isProFreeHost ? "
                 <div class='steps'>
-                    <strong>How to configure ProFreeHost Database:</strong><br>
-                    1. Log into your <strong>ProFreeHost Control Panel (cPanel)</strong>.<br>
-                    2. Go to <strong>MySQL Databases</strong> and find your <em>MySQL Host</em>, <em>Username</em>, and <em>Database Name</em>.<br>
-                    3. Open <code>config/database.php</code> in the ProFreeHost File Manager.<br>
-                    4. Update lines 26–29 with your actual database credentials and save.<br>
-                    5. Go to <strong>phpMyAdmin</strong> in cPanel and import <code>profreehost_database.sql</code>.
+                    <strong>ProFreeHost Setup:</strong><br>
+                    1. Log into your <strong>ProFreeHost cPanel</strong>.<br>
+                    2. Go to <strong>MySQL Databases</strong> and copy your credentials.<br>
+                    3. Edit <code>config/database.php</code> lines 44–47 with your real credentials.<br>
+                    4. Import <code>database/littlesteps.sql</code> via phpMyAdmin.
                 </div>
                 " : "
                 <div class='steps'>
-                    Please check that your MySQL service is running and that your database credentials in <code>config/database.php</code> are correct.
+                    <strong>Railway Setup:</strong> Make sure you added a <strong>MySQL</strong> service to your Railway project and the environment variables (<code>MYSQLHOST</code>, <code>MYSQLUSER</code>, <code>MYSQLPASSWORD</code>, <code>MYSQLDATABASE</code>) are injected.<br><br>
+                    <strong>Local:</strong> Ensure XAMPP MySQL is running and the database exists.
                 </div>
                 ") . "
             </div>
         </body>
         </html>");
     }
-    
-    // Set charset to utf8mb4 for full unicode support
+
     if (!$conn->set_charset("utf8mb4")) {
         die("Error loading character set utf8mb4: " . $conn->error);
     }
-    
+
     return $conn;
 }

@@ -1,3 +1,6 @@
 *.zip
 .system_generated/
 *.log
+deploy.ps1
+uploads/*
+!uploads/.gitkeep

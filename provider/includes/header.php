@@ -13,7 +13,7 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' - Provider Portal' : 'Provider P
 
 // Get unread notifications count
 $conn = getDBConnection();
-$stmt = $conn->prepare("SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND user_type = 'provider' AND is_read = 0");
+$stmt = $conn->prepare("SELECT COUNT(*) as count FROM notifications WHERE provider_id = ? AND is_read = 0");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $notifCount = $stmt->get_result()->fetch_assoc()['count'];
