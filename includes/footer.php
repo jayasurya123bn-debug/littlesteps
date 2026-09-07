@@ -33,10 +33,9 @@
                     <ul style="list-style: none; padding: 0;">
                         <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/index.php" style="color: #BDBDBD; transition: color 0.3s;">Home</a></li>
                         <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/search.php" style="color: #BDBDBD; transition: color 0.3s;">Find Care</a></li>
-                        <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/index.php#how-it-works" style="color: #BDBDBD; transition: color 0.3s;">How It Works</a></li>
-                        <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/index.php#features" style="color: #BDBDBD; transition: color 0.3s;">Features</a></li>
-                        <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/index.php#pricing" style="color: #BDBDBD; transition: color 0.3s;">Pricing</a></li>
+                        <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/services.php" style="color: #BDBDBD; transition: color 0.3s;">Services</a></li>
                         <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/about.php" style="color: #BDBDBD; transition: color 0.3s;">About Us</a></li>
+                        <li style="margin-bottom: 12px;"><a href="<?= SITE_URL ?>/contact.php" style="color: #BDBDBD; transition: color 0.3s;">Contact Us</a></li>
                     </ul>
                 </div>
                 

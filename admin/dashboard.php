@@ -14,6 +14,24 @@ $pageTitle = 'Dashboard';
 
 $conn = getDBConnection();
 
+// Helper function for safe query execution
+function safeQuery($conn, $query, $params = [], $types = '') {
+    try {
+        if ($params) {
+            $stmt = $conn->prepare($query);
+            if (!$stmt) return false;
+            if ($types) $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            return $stmt->get_result();
+        } else {
+            return $conn->query($query);
+        }
+    } catch (Exception $e) {
+        error_log("Query error: " . $e->getMessage() . " | Query: " . $query);
+        return false;
+    }
+}
+
 // 1. Fetch Stats
 $stats = [
     'parents' => 0,
@@ -23,29 +41,28 @@ $stats = [
 ];
 
 // Parents count
-$res = $conn->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'parent'");
-if ($res) $stats['parents'] = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM users WHERE role = 'parent'");
+if ($res && $row = $res->fetch_assoc()) $stats['parents'] = (int)$row['cnt'];
 
 // Providers count
-$res = $conn->query("SELECT COUNT(*) as cnt FROM providers");
-if ($res) $stats['providers'] = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM providers");
+if ($res && $row = $res->fetch_assoc()) $stats['providers'] = (int)$row['cnt'];
 
 // Bookings count & Platform Revenue (Total booking volume * 10% platform share)
-$res = $conn->query("SELECT COUNT(*) as cnt, SUM(final_amount) as total_val FROM bookings");
-if ($res) {
-    $row = $res->fetch_assoc();
-    $stats['bookings'] = $row['cnt'] ?? 0;
-    $stats['revenue'] = ($row['total_val'] ?? 0) * 0.10;
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt, SUM(final_amount) as total_val FROM bookings");
+if ($res && $row = $res->fetch_assoc()) {
+    $stats['bookings'] = (int)($row['cnt'] ?? 0);
+    $stats['revenue'] = ((float)($row['total_val'] ?? 0)) * 0.10;
 }
 
 // 2. Pending Approvals count
 $pendingProvidersCount = 0;
-$res = $conn->query("SELECT COUNT(*) as cnt FROM providers WHERE status = 'pending'");
-if ($res) $pendingProvidersCount = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM providers WHERE status = 'pending'");
+if ($res && $row = $res->fetch_assoc()) $pendingProvidersCount = (int)$row['cnt'];
 
 $pendingDocsCount = 0;
-$res = $conn->query("SELECT COUNT(*) as cnt FROM documents WHERE status = 'pending'");
-if ($res) $pendingDocsCount = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM documents WHERE status = 'pending'");
+if ($res && $row = $res->fetch_assoc()) $pendingDocsCount = (int)$row['cnt'];
 
 // 3. Recent Bookings (latest 8)
 $recentBookings = [];
@@ -57,7 +74,7 @@ $bQuery = "SELECT b.id, b.booking_code, b.child_name, b.final_amount, b.status, 
            JOIN daycare_centers c ON b.center_id = c.id
            JOIN providers p ON c.provider_id = p.id
            ORDER BY b.created_at DESC LIMIT 8";
-$res = $conn->query($bQuery);
+$res = safeQuery($conn, $bQuery);
 if ($res) {
     while($row = $res->fetch_assoc()) {
         $recentBookings[] = $row;
@@ -66,14 +83,14 @@ if ($res) {
 
 // 4. Pending Providers for approval widget
 $pendingProviders = [];
-$res = $conn->query("SELECT id, business_name, owner_name, city, created_at FROM providers WHERE status = 'pending' ORDER BY created_at DESC LIMIT 5");
+$res = safeQuery($conn, "SELECT id, business_name, owner_name, city, created_at FROM providers WHERE status = 'pending' ORDER BY created_at DESC LIMIT 5");
 if ($res) {
     while($row = $res->fetch_assoc()) {
         $pendingProviders[] = $row;
     }
 }
 
-$conn->close();
+// Do not close connection here, header reuses it
 
 require_once __DIR__ . '/includes/header.php';
 ?>

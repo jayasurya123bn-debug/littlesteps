@@ -10,7 +10,7 @@ require_once __DIR__ . '/session.php';
 
 /**
  * Sanitize user input
- * @param mysqli $conn Database connection
+ * @param mysqli|null $conn Database connection (optional for demo mode)
  * @param string $input
  * @return string Sanitized input
  */
@@ -18,7 +18,10 @@ function sanitizeInput($conn, $input) {
     $input = trim($input);
     $input = stripslashes($input);
     $input = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
-    return $conn->real_escape_string($input);
+    if ($conn instanceof mysqli) {
+        return $conn->real_escape_string($input);
+    }
+    return $input;
 }
 
 /**
@@ -108,7 +111,12 @@ function uploadFile($file, $destination, $allowedTypes = ALLOWED_IMAGE_TYPES) {
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $fileName = uniqid() . '_' . time() . '.' . $ext;
     
-    $fullPath = UPLOADS_PATH . '/' . trim($destination, '/') . '/' . $fileName;
+    $targetDir = UPLOADS_PATH . '/' . trim($destination, '/');
+    if (!is_dir($targetDir)) {
+        @mkdir($targetDir, 0777, true);
+    }
+    
+    $fullPath = $targetDir . '/' . $fileName;
     $dbPath = 'uploads/' . trim($destination, '/') . '/' . $fileName;
 
     if (move_uploaded_file($file['tmp_name'], $fullPath)) {
@@ -116,6 +124,19 @@ function uploadFile($file, $destination, $allowedTypes = ALLOWED_IMAGE_TYPES) {
     }
 
     return false;
+}
+
+/**
+ * Safely generate an absolute URL for an asset or uploaded file
+ * @param string $path e.g. 'assets/images/logo.png' or 'uploads/centers/1.jpg'
+ * @return string
+ */
+function assetUrl($path) {
+    if (empty($path)) return '';
+    if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
+        return $path;
+    }
+    return SITE_URL . '/' . ltrim($path, '/');
 }
 
 /**

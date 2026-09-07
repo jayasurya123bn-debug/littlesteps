@@ -1,10 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 /**
- * Landing Page - Little Steps
+ * Landing Page - Little Steps (Demo)
  */
 require_once __DIR__ . '/config/session.php';
 require_once __DIR__ . '/config/constants.php';
@@ -296,6 +292,58 @@ require_once __DIR__ . '/includes/header.php';
         </a>
     </div>
 </section>
+
+<!-- 7. Demo Access Panel -->
+<?php if (!isLoggedIn()): ?>
+<section style="background: #FFF0F5; padding: 60px 0; border-top: 1px solid var(--light-pink);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h3 style="color: var(--dark-pink); font-size: 1.5rem; margin-bottom: 8px;">🎯 Demo Access</h3>
+            <p style="color: var(--medium-gray);">Try the platform with pre-configured accounts</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto;">
+            
+            <!-- Admin Demo -->
+            <div class="card" style="background: linear-gradient(135deg, #E91E63 0%, #AD1457 100%); color: white; padding: 32px; border-radius: 20px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🛡️</div>
+                <h4 style="margin-bottom: 8px;">Admin Dashboard</h4>
+                <p style="opacity: 0.9; font-size: 14px; margin-bottom: 20px;">Full platform control, analytics, user management</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 16px;">
+                    <strong>Email:</strong> admin@littlesteps.com<br>
+                    <strong>Pass:</strong> admin123
+                </div>
+                <a href="login.php" class="btn" style="background: white; color: #E91E63; font-weight: 600;">Login as Admin</a>
+            </div>
+            
+            <!-- Provider Demo -->
+            <div class="card" style="background: linear-gradient(135deg, #FF6B9D 0%, #E91E63 100%); color: white; padding: 32px; border-radius: 20px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🏢</div>
+                <h4 style="margin-bottom: 8px;">Provider Dashboard</h4>
+                <p style="opacity: 0.9; font-size: 14px; margin-bottom: 20px;">Manage centers, staff, bookings, earnings</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 16px;">
+                    <strong>Email:</strong> provider@littlesteps.com<br>
+                    <strong>Pass:</strong> provider123
+                </div>
+                <a href="login.php" class="btn" style="background: white; color: #E91E63; font-weight: 600;">Login as Provider</a>
+            </div>
+            
+            <!-- Parent Demo -->
+            <div class="card" style="background: linear-gradient(135deg, #FF9E6B 0%, #FF6B9D 100%); color: white; padding: 32px; border-radius: 20px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">👨‍👩‍👧</div>
+                <h4 style="margin-bottom: 8px;">Parent Dashboard</h4>
+                <p style="opacity: 0.9; font-size: 14px; margin-bottom: 20px;">Book care, subscriptions, view bookings</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 16px;">
+                    <strong>Email:</strong> parent@littlesteps.com<br>
+                    <strong>Pass:</strong> parent123
+                </div>
+                <a href="login.php" class="btn" style="background: white; color: #E91E63; font-weight: 600;">Login as Parent</a>
+            </div>
+            
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <style>
     @keyframes bounce {

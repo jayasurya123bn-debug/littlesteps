@@ -12,12 +12,18 @@ requireRole('provider');
 $pageTitle = isset($pageTitle) ? $pageTitle . ' - Provider Portal' : 'Provider Portal - Little Steps';
 
 // Get unread notifications count
-$conn = getDBConnection();
-$stmt = $conn->prepare("SELECT COUNT(*) as count FROM notifications WHERE provider_id = ? AND is_read = 0");
-$stmt->bind_param("i", $_SESSION['user_id']);
-$stmt->execute();
-$notifCount = $stmt->get_result()->fetch_assoc()['count'];
-$conn->close();
+$notifCount = 0;
+try {
+    $conn = getDBConnection();
+    $providerId = (int)($_SESSION['user_id'] ?? 0);
+    $res = $conn->query("SELECT COUNT(*) as count FROM notifications WHERE provider_id = $providerId AND is_read = 0");
+    if ($res && $row = $res->fetch_assoc()) {
+        $notifCount = (int)$row['count'];
+    }
+} catch (Exception $e) {
+    error_log("Notification count error: " . $e->getMessage());
+    $notifCount = 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

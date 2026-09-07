@@ -1,6 +1,10 @@
 *.zip
 .system_generated/
 *.log
-deploy.ps1
+deploy*.ps1
+fix_upload.ps1
+.vercel/
+.env
 uploads/*
 !uploads/.gitkeep
+

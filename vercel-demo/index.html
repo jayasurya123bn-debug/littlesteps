@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little Steps — Trusted 24×7 Childcare Platform</title>
+  <meta name="description" content="Find vetted caregivers and daycare centers near you. Safe, loving childcare available 24/7. Book in minutes and enjoy peace of mind.">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --main-pink:#E91E63; --light-pink:#FCE4EC; --dark-pink:#AD1457;
+      --accent-pink:#F50057; --pastel-pink:#F8BBD9; --baby-pink:#FFF0F5;
+      --white:#FFFFFF; --off-white:#FAF9FA; --light-gray:#F5F5F5;
+      --medium-gray:#9E9E9E; --dark-gray:#424242; --near-black:#212121;
+      --success:#4CAF50; --success-bg:#E8F5E9;
+      --font-primary:'Poppins',-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--font-primary);background-color:var(--off-white);background-image:radial-gradient(at 0% 0%,rgba(252,228,236,.8) 0px,transparent 50%),radial-gradient(at 100% 100%,rgba(248,187,217,.6) 0px,transparent 50%);background-attachment:fixed;color:var(--dark-gray);line-height:1.6;font-size:16px}
+    a{color:var(--main-pink);text-decoration:none;transition:all .3s}
+    a:hover{color:var(--dark-pink)}
+    h1,h2,h3,h4{color:var(--near-black);font-weight:700}
+    p{margin-bottom:1rem}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 24px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);border:none;font-family:inherit;gap:10px}
+    .btn-primary{background:var(--main-pink);color:#fff;box-shadow:0 4px 12px rgba(233,30,99,.25)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(233,30,99,.4);color:#fff}
+    .btn-outline{background:rgba(255,255,255,.75);border:1px solid var(--medium-gray);color:var(--dark-gray)}
+    .btn-outline:hover{border-color:var(--dark-gray);background:#fff}
+    .btn-lg{padding:16px 40px;font-size:16px}
+
+    /* Navbar */
+    nav{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);box-shadow:0 4px 15px rgba(233,30,99,.05);position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,.5)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:80px}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo-icon{width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(233,30,99,.25);flex-shrink:0;border:2px solid rgba(233,30,99,.15);font-size:26px}
+    .nav-brand{font-weight:700;font-size:1.5rem;color:var(--near-black);letter-spacing:-.5px}
+    .nav-brand span{color:var(--main-pink)}
+    .nav-links{display:flex;align-items:center;gap:32px}
+    .nav-links a{font-size:15px;font-weight:500;color:var(--dark-gray)}
+    .nav-links a:hover,.nav-links a.active{color:var(--main-pink)}
+    .nav-divider{width:1px;height:24px;background:#E0E0E0;margin:0 4px}
+    .mobile-btn{display:none;background:none;border:none;font-size:24px;color:var(--main-pink);cursor:pointer}
+
+    /* Mobile Menu */
+    #mobileMenu{position:fixed;top:80px;left:0;width:100%;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(233,30,99,.08);z-index:999;display:none;flex-direction:column;padding:16px}
+    #mobileMenu.open{display:flex}
+    #mobileMenu a{padding:12px;border-bottom:1px solid rgba(0,0,0,.05);color:var(--dark-gray);font-weight:500}
+    .mobile-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+
+    /* Hero */
+    .hero{background:linear-gradient(180deg,var(--light-pink) 0%,#fff 100%);padding:120px 0 80px;overflow:hidden}
+    .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .hero-badge{display:inline-block;background:#fff;border-radius:50px;padding:8px 20px;margin-bottom:24px;box-shadow:0 4px 15px rgba(233,30,99,.08);border:1px solid var(--light-pink);font-size:14px;font-weight:600;color:var(--dark-gray)}
+    .hero-h1{font-size:3.5rem;line-height:1.1;color:var(--dark-pink);font-weight:700;margin-bottom:24px;letter-spacing:-1px}
+    .hero-sub{font-size:1.125rem;color:#616161;line-height:1.6;margin-bottom:32px;max-width:90%}
+    .hero-buttons{display:flex;gap:16px;margin-bottom:40px;flex-wrap:wrap}
+    .hero-social{display:flex;align-items:center;gap:16px}
+    .avatar-stack{display:flex}
+    .avatar-stack img{width:48px;height:48px;border-radius:50%;border:3px solid #fff;margin-right:-15px}
+    .avatar-stack img:last-child{margin-right:0}
+    .star-row{color:var(--main-pink);font-size:16px;margin-bottom:2px}
+    .star-label{font-size:13px;font-weight:600;color:var(--dark-gray)}
+    .hero-img-wrap{position:relative}
+    .hero-img-box{width:100%;aspect-ratio:4/5;border-radius:40px 120px 40px 40px;overflow:hidden;border:8px solid #fff;box-shadow:0 20px 60px rgba(233,30,99,.15)}
+    .hero-img-box img{width:100%;height:100%;object-fit:cover}
+    .float-heart{position:absolute;top:10%;right:-20px;width:60px;height:60px;background:#fff;border-radius:50%;box-shadow:0 10px 20px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--main-pink);animation:bounce 3s infinite}
+    .float-badge{position:absolute;bottom:15%;left:-30px;background:#fff;border-radius:20px;padding:12px 20px;box-shadow:0 10px 30px rgba(233,30,99,.15);display:flex;align-items:center;gap:12px}
+    .float-badge-icon{width:40px;height:40px;background:var(--success-bg);color:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .float-badge strong{display:block;font-weight:700;font-size:14px;color:var(--near-black)}
+    .float-badge span{font-size:12px;color:var(--medium-gray)}
+
+    /* Sections */
+    .section{padding:100px 0}
+    .section-title{font-size:2.5rem;text-align:center;margin-bottom:12px;font-weight:700;letter-spacing:-.5px}
+    .section-sub{font-size:1.125rem;color:#616161;text-align:center;margin-bottom:64px}
+
+    /* Features */
+    .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .feature-cards{display:grid;gap:32px}
+    .feature-card{background:#fff;border-radius:24px;padding:24px;box-shadow:0 10px 40px rgba(233,30,99,.08);display:flex;align-items:flex-start;gap:20px;transition:transform .3s}
+    .feature-card:hover{transform:translateY(-8px)}
+    .feature-icon{width:64px;height:64px;background:var(--light-pink);color:var(--main-pink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+    .feature-card h3{font-size:1.25rem;margin-bottom:8px}
+    .feature-card p{color:#616161;font-size:15px;margin:0}
+    .features-image{border-radius:40px;overflow:hidden;box-shadow:0 20px 40px rgba(233,30,99,.15)}
+    .features-image img{width:100%;height:100%;object-fit:cover;min-height:500px;display:block}
+
+    /* Steps */
+    .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;text-align:center}
+    .step-circle{width:80px;height:80px;background:linear-gradient(135deg,var(--main-pink),var(--accent-pink));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin:0 auto 24px;box-shadow:0 8px 24px rgba(233,30,99,.3)}
+    .step-item h3{font-size:1.35rem;margin-bottom:12px}
+    .step-item p{color:#616161;font-size:15px}
+
+    /* Testimonials */
+    .testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px}
+    .testimonial-card{background:#fff;border-radius:24px;padding:32px;box-shadow:0 10px 40px rgba(233,30,99,.05)}
+    .stars{color:var(--main-pink);font-size:16px;margin-bottom:16px}
+    .testimonial-card blockquote{font-style:italic;color:var(--dark-gray);font-size:15px;margin-bottom:24px;border:none;padding:0}
+    .reviewer{display:flex;align-items:center;gap:16px}
+    .reviewer img{width:48px;height:48px;border-radius:50%}
+    .reviewer-name{font-weight:700;color:var(--near-black)}
+    .reviewer-role{font-size:13px;color:var(--medium-gray)}
+
+    /* Pricing */
+    .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;align-items:center;max-width:1000px;margin:0 auto}
+    .pricing-card{background:#fff;border-radius:24px;padding:40px;box-shadow:0 10px 40px rgba(233,30,99,.05);text-align:center;position:relative}
+    .pricing-card.popular{border:2px solid var(--main-pink);transform:scale(1.05);box-shadow:0 20px 50px rgba(233,30,99,.15)}
+    .popular-badge{position:absolute;top:-16px;left:50%;transform:translateX(-50%);background:var(--main-pink);color:#fff;padding:6px 20px;border-radius:20px;font-size:14px;font-weight:600}
+    .pricing-card h3{font-size:1.5rem;margin-bottom:16px}
+    .price{font-size:3rem;font-weight:700;color:var(--near-black);margin-bottom:8px}
+    .price span{font-size:16px;color:var(--medium-gray);font-weight:500}
+    .pricing-desc{color:var(--medium-gray);font-size:14px;margin-bottom:32px}
+    .pricing-features{list-style:none;padding:0;text-align:left;margin-bottom:32px}
+    .pricing-features li{margin-bottom:12px;font-size:15px;color:var(--dark-gray)}
+    .pricing-features li i{width:24px}
+    .pricing-card .btn{width:100%}
+
+    /* CTA */
+    .cta-section{background:var(--dark-pink);padding:80px 0}
+    .cta-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:32px}
+    .cta-inner h2{color:#fff;font-size:2.5rem;margin-bottom:12px}
+    .cta-inner p{color:rgba(255,255,255,.9);font-size:1.125rem;margin:0}
+    .cta-btn{background:#fff;color:var(--dark-pink);padding:16px 40px;font-size:16px;border-radius:8px;font-weight:600}
+    .cta-btn:hover{background:var(--light-pink);color:var(--dark-pink);transform:translateY(-2px)}
+
+    /* Footer */
+    footer{background:var(--near-black);color:#fff;padding:80px 0 40px}
+    .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:60px;margin-bottom:60px}
+    .footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+    .footer-logo-icon{width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+    .footer-brand{font-weight:700;font-size:1.5rem;color:#fff}
+    .footer-brand span{color:var(--main-pink)}
+    .footer-about{color:#BDBDBD;font-size:15px;line-height:1.6}
+    .social-links{display:flex;gap:16px;margin-top:24px}
+    .social-links a{color:#fff;background:rgba(255,255,255,.1);width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .3s}
+    .social-links a:hover{background:var(--main-pink);color:#fff}
+    .footer-col h4{color:#fff;margin-bottom:24px;font-weight:600}
+    .footer-col ul{list-style:none;padding:0}
+    .footer-col li{margin-bottom:12px}
+    .footer-col a{color:#BDBDBD;font-size:15px;transition:color .3s}
+    .footer-col a:hover{color:var(--main-pink)}
+    .footer-contact-list{list-style:none;padding:0}
+    .footer-contact-list li{margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;color:#BDBDBD;font-size:15px}
+    .footer-contact-list i{color:var(--main-pink);margin-top:4px}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;color:#9E9E9E;font-size:13px;flex-wrap:wrap;gap:16px}
+    .footer-bottom a{color:#9E9E9E}
+    .footer-bottom a:hover{color:var(--main-pink)}
+    .footer-legal{display:flex;gap:24px}
+
+    /* Animations */
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+    /* Responsive */
+    @media(max-width:991px){
+      .nav-links{display:none}.mobile-btn{display:block}
+      .hero-grid{grid-template-columns:1fr;gap:40px;text-align:center}
+      .hero-h1{font-size:2.5rem}.hero-sub{margin:0 auto 32px}
+      .hero-buttons,.hero-social{justify-content:center}
+      .features-grid{grid-template-columns:1fr}.features-image{display:none}
+      .pricing-card.popular{transform:scale(1)}
+      .cta-inner{flex-direction:column;text-align:center}
+    }
+    @media(max-width:640px){
+      .hero-h1{font-size:2rem}.section-title{font-size:1.75rem}
+      .cta-inner h2{font-size:1.75rem}.float-badge,.float-heart{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">👶</div>
+      <span class="nav-brand">Little <span>Steps</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">About</a>
+      <div class="nav-divider"></div>
+      <a href="#" style="color:var(--medium-gray);font-size:15px;">Log In</a>
+      <a href="#" class="btn btn-primary" style="padding:10px 24px;">Sign Up Free</a>
+    </div>
+    <button class="mobile-btn" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<div id="mobileMenu">
+  <a href="#">Home</a>
+  <a href="#features">Features</a>
+  <a href="#how-it-works">How It Works</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#contact">About</a>
+  <div class="mobile-btns">
+    <a href="#" class="btn btn-outline" style="width:100%;">Log In</a>
+    <a href="#" class="btn btn-primary" style="width:100%;">Sign Up Free</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-badge">✨ Trusted by 10,000+ parents</div>
+      <h1 class="hero-h1">Safe, Loving Childcare for Your Little Ones</h1>
+      <p class="hero-sub">Find vetted caregivers and daycare centers near you, available 24/7. Book in minutes and enjoy complete peace of mind.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-primary btn-lg">Find Care Now</a>
+        <a href="#how-it-works" class="btn btn-outline btn-lg" style="border-color:var(--main-pink);color:var(--main-pink);background:transparent;">How It Works</a>
+      </div>
+      <div class="hero-social">
+        <div class="avatar-stack">
+          <img src="https://ui-avatars.com/api/?name=P1&background=F8BBD9&color=AD1457" alt="Parent">
+          <img src="https://ui-avatars.com/api/?name=P2&background=FCE4EC&color=E91E63" alt="Parent">
+          <img src="https://ui-avatars.com/api/?name=P3&background=FFF0F5&color=F50057" alt="Parent">
+        </div>
+        <div>
+          <div class="star-row"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <span class="star-label">4.9/5 from 2,300+ reviews</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-img-wrap">
+      <div class="hero-img-box">
+        <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80" alt="Caregiver playing with toddler">
+      </div>
+      <div class="float-heart"><i class="fas fa-heart"></i></div>
+      <div class="float-badge">
+        <div class="float-badge-icon"><i class="fas fa-shield-alt"></i></div>
+        <div><strong>100% Verified</strong><span>Caregivers</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section" style="background:#fff;">
+  <div class="container">
+    <h2 class="section-title">Why Parents Choose Little Steps</h2>
+    <p class="section-sub">We combine safety, flexibility, and love — for every child.</p>
+    <div class="features-grid">
+      <div class="feature-cards">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <div><h3>Safety First</h3><p>Stringent background checks and CCTV-enabled centers for absolute peace of mind.</p></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-clock"></i></div>
+          <div><h3>24/7 Availability</h3><p>Flexible timings to support shift workers and unexpected emergency drop-ins.</p></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-heart"></i></div>
+          <div><h3>Loving Environment</h3><p>Compassionate care that feels like home, focusing on your child's happiness.</p></div>
+        </div>
+      </div>
+      <div class="features-image">
+        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80" alt="Safe Playroom">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="section" style="background:var(--baby-pink);">
+  <div class="container">
+    <h2 class="section-title">Booking Care in 3 Simple Steps</h2>
+    <p class="section-sub">Finding the perfect care is easier than ever.</p>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-circle">1</div>
+        <h3>Search &amp; Select</h3>
+        <p>Enter your location and preferences to browse a curated list of vetted centers and caregivers.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <h3>Meet &amp; Greet</h3>
+        <p>Review profiles, read verified reviews, and chat with providers to ensure a perfect match.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <h3>Book Care</h3>
+        <p>Securely book your slot online. Relax knowing your child is in the best hands.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" style="background:#fff;">
+  <div class="container">
+    <h2 class="section-title">What Parents Say</h2>
+    <p class="section-sub">Don't just take our word for it.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <blockquote>"Finding reliable night care was a nightmare until I found Little Steps. The center is amazing and the booking process is seamless."</blockquote>
+        <div class="reviewer">
+          <img src="https://ui-avatars.com/api/?name=Sarah+J&background=FCE4EC&color=E91E63" alt="Sarah Jenkins">
+          <div><div class="reviewer-name">Sarah Jenkins</div><div class="reviewer-role">Parent · Nurse</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <blockquote>"The caregivers are so compassionate. I love the instant updates and the ability to book emergency drop-ins on short notice."</blockquote>
+        <div class="reviewer">
+          <img src="https://ui-avatars.com/api/?name=Mark+T&background=F8BBD9&color=AD1457" alt="Mark Thompson">
+          <div><div class="reviewer-name">Mark Thompson</div><div class="reviewer-role">Parent</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <blockquote>"As a single mom, this platform is a lifesaver. Incredibly user-friendly and every center we've visited has been top-notch."</blockquote>
+        <div class="reviewer">
+          <img src="https://ui-avatars.com/api/?name=Elena+R&background=FFF0F5&color=F50057" alt="Elena Rodriguez">
+          <div><div class="reviewer-name">Elena Rodriguez</div><div class="reviewer-role">Parent</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="section" style="background:var(--baby-pink);">
+  <div class="container">
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-sub">Choose a plan that fits your childcare needs.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3 style="color:var(--dark-gray);">Hourly Drop-in</h3>
+        <div class="price">₹250<span>/hr</span></div>
+        <p class="pricing-desc">Perfect for occasional needs.</p>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check" style="color:var(--success);"></i> Flexible booking</li>
+          <li><i class="fas fa-check" style="color:var(--success);"></i> Emergency availability</li>
+          <li><i class="fas fa-check" style="color:var(--success);"></i> Basic activity updates</li>
+        </ul>
+        <a href="#" class="btn btn-outline">Get Started</a>
+      </div>
+      <div class="pricing-card popular">
+        <div class="popular-badge">Most Popular</div>
+        <h3 style="color:var(--main-pink);">Weekly Standard</h3>
+        <div class="price">₹4,500<span>/wk</span></div>
+        <p class="pricing-desc">Ideal for regular working hours.</p>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check" style="color:var(--main-pink);"></i> Guaranteed slot</li>
+          <li><i class="fas fa-check" style="color:var(--main-pink);"></i> Priority support</li>
+          <li><i class="fas fa-check" style="color:var(--main-pink);"></i> Full daily reports</li>
+          <li><i class="fas fa-check" style="color:var(--main-pink);"></i> Includes meals</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Subscribe Now</a>
+      </div>
+      <div class="pricing-card">
+        <h3 style="color:var(--dark-gray);">Monthly Premium</h3>
+        <div class="price">₹15,000<span>/mo</span></div>
+        <p class="pricing-desc">For complete 24/7 flexibility.</p>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check" style="color:var(--success);"></i> Unrestricted 24×7 access</li>
+          <li><i class="fas fa-check" style="color:var(--success);"></i> 1-on-1 tutoring options</li>
+          <li><i class="fas fa-check" style="color:var(--success);"></i> Premium medical coverage</li>
+        </ul>
+        <a href="#" class="btn btn-outline">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROVIDER CTA -->
+<section class="cta-section">
+  <div class="container cta-inner">
+    <div>
+      <h2>Are you a childcare provider?</h2>
+      <p>Join our network and grow your business with the Little Steps platform.</p>
+    </div>
+    <a href="#" class="btn cta-btn">Become a Provider</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="footer-logo-icon">👶</div>
+          <span class="footer-brand">Little <span>Steps</span></span>
+        </div>
+        <p class="footer-about">Your trusted platform for safe, verified, and flexible 24×7 childcare. We combine safety, flexibility, and love.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Providers</h4>
+        <ul>
+          <li><a href="#">Join as a Provider</a></li>
+          <li><a href="#">Provider Login</a></li>
+          <li><a href="#">Provider Resources</a></li>
+          <li><a href="#">Safety Guidelines</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <ul class="footer-contact-list">
+          <li><i class="fas fa-map-marker-alt"></i><span>123 Little Care Avenue,<br>Tech City, TC 10010</span></li>
+          <li><i class="fas fa-envelope"></i><a href="mailto:hello@littlesteps.com" style="color:#BDBDBD;">hello@littlesteps.com</a></li>
+          <li><i class="fas fa-phone"></i><a href="tel:+18005551234" style="color:#BDBDBD;">+1 (800) 555-1234</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 Little Steps. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

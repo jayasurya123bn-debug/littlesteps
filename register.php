@@ -7,7 +7,13 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 
 if (isLoggedIn()) {
-    redirect('/' . $_SESSION['user_role'] . '/dashboard.php');
+    $role = $_SESSION['user_role'] ?? 'parent';
+    $allowedRoles = ['parent', 'provider', 'admin'];
+    if (in_array($role, $allowedRoles)) {
+        redirect('/' . $role . '/dashboard.php');
+    } else {
+        redirect('/login.php');
+    }
 }
 
 $pageTitle = 'Parent Registration';

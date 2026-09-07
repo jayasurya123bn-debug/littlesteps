@@ -42,7 +42,7 @@ require_once __DIR__ . '/includes/header.php';
             <h3 style="color: var(--dark-pink); margin-bottom: var(--space-sm);">Night Care (24x7)</h3>
             <p style="color: var(--medium-gray); flex-grow: 1;">Overnight care designed for parents who work night shifts. Safe, secure sleeping arrangements with trained night-time caregivers.</p>
             <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--light-pink);">
-                <a href="search.php?24x7=1" class="btn btn-outline" style="width: 100%;">Find 24x7 Centers</a>
+                <a href="search.php?is_24x7=1" class="btn btn-outline" style="width: 100%;">Find 24x7 Centers</a>
             </div>
         </div>
         

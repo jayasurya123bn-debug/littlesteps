@@ -13,7 +13,25 @@ $pageTitleHeader = 'Provider Dashboard';
 $pageTitle = 'Dashboard';
 
 $conn = getDBConnection();
-$providerId = $_SESSION['user_id'];
+$providerId = (int)($_SESSION['user_id'] ?? 0);
+
+// Helper function for safe query execution
+function safeQuery($conn, $query, $params = [], $types = '') {
+    try {
+        if ($params) {
+            $stmt = $conn->prepare($query);
+            if (!$stmt) return false;
+            if ($types) $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            return $stmt->get_result();
+        } else {
+            return $conn->query($query);
+        }
+    } catch (Exception $e) {
+        error_log("Query error: " . $e->getMessage() . " | Query: " . $query);
+        return false;
+    }
+}
 
 // 1. Core Provider Stats
 $stats = [
@@ -26,65 +44,65 @@ $stats = [
 ];
 
 // Total centers under provider
-$res = $conn->query("SELECT COUNT(*) as cnt FROM daycare_centers WHERE provider_id = $providerId");
-if ($res) $stats['centers_count'] = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM daycare_centers WHERE provider_id = ?", [$providerId], 'i');
+if ($res && $row = $res->fetch_assoc()) $stats['centers_count'] = (int)$row['cnt'];
 
 // Total caregivers
-$res = $conn->query("SELECT COUNT(*) as cnt FROM caregivers WHERE provider_id = $providerId");
-if ($res) $stats['caregivers_count'] = $res->fetch_assoc()['cnt'];
+$res = safeQuery($conn, "SELECT COUNT(*) as cnt FROM caregivers WHERE provider_id = ?", [$providerId], 'i');
+if ($res && $row = $res->fetch_assoc()) $stats['caregivers_count'] = (int)$row['cnt'];
 
 // Today's bookings
-$res = $conn->query("
+$res = safeQuery($conn, "
     SELECT COUNT(*) as cnt 
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    WHERE c.provider_id = $providerId AND DATE(b.start_datetime) = CURDATE()
-");
-if ($res) $stats['today_bookings'] = $res->fetch_assoc()['cnt'];
+    WHERE c.provider_id = ? AND DATE(b.start_datetime) = CURDATE()
+", [$providerId], 'i');
+if ($res && $row = $res->fetch_assoc()) $stats['today_bookings'] = (int)$row['cnt'];
 
 // This Month Revenue
-$res = $conn->query("
+$res = safeQuery($conn, "
     SELECT SUM(b.final_amount) as total
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
-    WHERE c.provider_id = $providerId AND b.payment_status = 'paid'
+    WHERE c.provider_id = ? AND b.payment_status = 'paid'
       AND MONTH(b.created_at) = MONTH(CURDATE()) AND YEAR(b.created_at) = YEAR(CURDATE())
-");
-if ($res) $stats['month_revenue'] = (float)($res->fetch_assoc()['total'] ?? 0);
+", [$providerId], 'i');
+if ($res && $row = $res->fetch_assoc()) $stats['month_revenue'] = (float)($row['total'] ?? 0);
 
 // Provider rating
-$res = $conn->query("SELECT rating FROM providers WHERE id = $providerId");
-if ($res) $stats['avg_rating'] = $res->fetch_assoc()['rating'] ?? 4.9;
+$res = safeQuery($conn, "SELECT rating FROM providers WHERE id = ?", [$providerId], 'i');
+if ($res && $row = $res->fetch_assoc()) $stats['avg_rating'] = (float)($row['rating'] ?? 4.9);
 
 // 2. Pending Booking Requests (Actionable)
 $pendingBookings = [];
-$res = $conn->query("
+$res = safeQuery($conn, "
     SELECT b.*, u.first_name, u.last_name, u.phone as parent_phone, c.name as center_name
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
     JOIN users u ON b.user_id = u.id
-    WHERE c.provider_id = $providerId AND b.status = 'pending'
+    WHERE c.provider_id = ? AND b.status = 'pending'
     ORDER BY b.created_at DESC LIMIT 5
-");
+", [$providerId], 'i');
 if ($res) {
     while($row = $res->fetch_assoc()) $pendingBookings[] = $row;
 }
 
 // 3. Recent Confirmed/Completed Bookings
 $recentBookings = [];
-$res = $conn->query("
+$res = safeQuery($conn, "
     SELECT b.*, u.first_name, u.last_name, c.name as center_name
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
     JOIN users u ON b.user_id = u.id
-    WHERE c.provider_id = $providerId
+    WHERE c.provider_id = ?
     ORDER BY b.created_at DESC LIMIT 6
-");
+", [$providerId], 'i');
 if ($res) {
     while($row = $res->fetch_assoc()) $recentBookings[] = $row;
 }
 
-$conn->close();
+// Do not close connection here, header reuses it
 
 require_once __DIR__ . '/includes/header.php';
 ?>

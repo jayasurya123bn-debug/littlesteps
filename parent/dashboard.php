@@ -12,32 +12,52 @@ $pageTitleHeader = 'Dashboard';
 $pageTitle = 'Dashboard';
 
 $conn = getDBConnection();
-$userId = $_SESSION['user_id'];
+$userId = (int)($_SESSION['user_id'] ?? 0);
+
+// Helper function for safe query execution
+function safeQuery($conn, $query, $params = [], $types = '') {
+    try {
+        if ($params) {
+            $stmt = $conn->prepare($query);
+            if (!$stmt) return false;
+            if ($types) $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            return $stmt->get_result();
+        } else {
+            return $conn->query($query);
+        }
+    } catch (Exception $e) {
+        error_log("Query error: " . $e->getMessage() . " | Query: " . $query);
+        return false;
+    }
+}
 
 // Get Upcoming Bookings
-$upcomingStmt = $conn->prepare("
+$upcomingBookings = [];
+$res = safeQuery($conn, "
     SELECT b.*, c.name as center_name, c.area, c.city 
     FROM bookings b
     JOIN daycare_centers c ON b.center_id = c.id
     WHERE b.user_id = ? AND b.start_datetime > NOW() AND b.status IN ('pending', 'confirmed')
     ORDER BY b.start_datetime ASC LIMIT 3
-");
-$upcomingStmt->bind_param("i", $userId);
-$upcomingStmt->execute();
-$upcomingBookings = $upcomingStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+", [$userId], 'i');
+if ($res) {
+    $upcomingBookings = $res->fetch_all(MYSQLI_ASSOC);
+}
 
 // Get Active Subscriptions
-$subStmt = $conn->prepare("
+$subscriptions = [];
+$res = safeQuery($conn, "
     SELECT s.*, c.name as center_name 
     FROM subscriptions s
     JOIN daycare_centers c ON s.center_id = c.id
     WHERE s.user_id = ? AND s.status = 'active'
-");
-$subStmt->bind_param("i", $userId);
-$subStmt->execute();
-$subscriptions = $subStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+", [$userId], 'i');
+if ($res) {
+    $subscriptions = $res->fetch_all(MYSQLI_ASSOC);
+}
 
-$conn->close();
+// Note: Do NOT close connection here — includes/header.php reuses the singleton connection
 
 require_once __DIR__ . '/includes/header.php';
 ?>

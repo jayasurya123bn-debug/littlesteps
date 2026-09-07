@@ -115,8 +115,8 @@ a:hover { color: var(--dark-pink); }
 }
 
 .main-content {
-    /* Adjusted for floating sidebar layout */
-    margin-left: calc(280px + var(--space-lg)); 
+    /* Adjusted for floating sidebar layout (280px width + 16px left + 24px gap) */
+    margin-left: calc(280px + var(--space-md) + var(--space-lg)); 
     min-height: 100vh;
     display: flex;
     flex-direction: column;

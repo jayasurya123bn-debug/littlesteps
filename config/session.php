@@ -7,7 +7,10 @@
 // Configure session settings before starting
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_samesite', 'Lax');
+// cookie_samesite only supported in PHP 7.3+
+if (PHP_VERSION_ID >= 70300) {
+    ini_set('session.cookie_samesite', 'Lax');
+}
 
 // Start the session if it hasn't been started already
 if (session_status() === PHP_SESSION_NONE) {
@@ -116,10 +119,15 @@ function getFlashMessage() {
 }
 
 /**
- * Redirect to a path relative to SITE_URL
- * @param string $path e.g., '/login.php'
+ * Redirect to a path relative to SITE_URL or an absolute URL
+ * @param string $path e.g., '/login.php' or 'login.php' or 'https://...'
  */
 function redirect($path) {
-    header('Location: ' . SITE_URL . $path);
+    if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
+        header('Location: ' . $path);
+    } else {
+        $cleanPath = '/' . ltrim($path, '/');
+        header('Location: ' . SITE_URL . $cleanPath);
+    }
     exit();
 }

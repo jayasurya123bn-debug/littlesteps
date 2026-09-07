@@ -11,12 +11,18 @@ requireRole('admin');
 
 $pageTitle = isset($pageTitle) ? $pageTitle . ' - Admin Panel' : 'Admin Panel - Little Steps';
 
-// Get unread notifications or pending items count for admin
-$conn = getDBConnection();
-$stmt = $conn->prepare("SELECT COUNT(*) as count FROM daycare_centers WHERE status = 'pending'");
-$stmt->execute();
-$pendingCentersCount = $stmt->get_result()->fetch_assoc()['count'];
-$conn->close();
+// Get pending centers count
+$pendingCentersCount = 0;
+try {
+    $conn = getDBConnection();
+    $res = $conn->query("SELECT COUNT(*) as count FROM daycare_centers WHERE status = 'pending'");
+    if ($res && $row = $res->fetch_assoc()) {
+        $pendingCentersCount = (int)$row['count'];
+    }
+} catch (Exception $e) {
+    error_log("Pending centers count error: " . $e->getMessage());
+    $pendingCentersCount = 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

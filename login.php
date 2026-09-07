@@ -6,9 +6,27 @@
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 
+// Demo mode - set to true for testing without database
+$DEMO_MODE = !file_exists(__DIR__ . '/.env') && 
+             (php_sapi_name() === 'cli' || 
+              in_array(explode(':', $_SERVER['HTTP_HOST'])[0], ['localhost', '127.0.0.1', '::1', 'little-steps.unaux.com']));
+
+// Demo credentials (matching database seed data)
+$DEMO_ACCOUNTS = [
+    'admin@littlesteps.com'    => ['password' => 'admin123',    'role' => 'admin',    'name' => 'System Admin',    'id' => 1],
+    'provider@littlesteps.com' => ['password' => 'provider123', 'role' => 'provider', 'name' => 'Dr. Priya Nambiar', 'id' => 1, 'business_name' => 'Bloom & Blossom Daycare Network'],
+    'parent@littlesteps.com'   => ['password' => 'parent123',   'role' => 'parent',   'name' => 'Sneha Sharma', 'id' => 2],
+];
+
 // Redirect if already logged in
 if (isLoggedIn()) {
-    redirect('/' . $_SESSION['user_role'] . '/dashboard.php');
+    $role = $_SESSION['user_role'] ?? 'parent';
+    $allowedRoles = ['parent', 'provider', 'admin'];
+    if (in_array($role, $allowedRoles)) {
+        redirect('/' . $role . '/dashboard.php');
+    } else {
+        redirect('/login.php');
+    }
 }
 
 $pageTitle = 'Login';
@@ -18,72 +36,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCSRFToken($_POST['csrf_token'])) {
         $error = "Invalid request token. Please try again.";
     } else {
-        $conn = getDBConnection();
-        $email = sanitizeInput($conn, $_POST['email']);
+        $email = sanitizeInput(null, $_POST['email']);
         $password = $_POST['password'];
         
         if (empty($email) || empty($password)) {
             $error = "Please enter both email and password.";
         } else {
-            // First check users table (Parents/Admins)
-            $stmt = $conn->prepare("SELECT id, email, password, first_name, last_name, role, is_active FROM users WHERE email = ? LIMIT 1");
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            $loggedIn = false;
+            $user = null;
             
-            if ($result->num_rows === 1) {
-                $user = $result->fetch_assoc();
-                if (password_verify($password, $user['password'])) {
-                    if ($user['is_active'] == 1) {
-                        loginUser($user, $user['role']);
-                        
-                        // Update last login
-                        $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
-                        $updateStmt->bind_param("i", $user['id']);
-                        $updateStmt->execute();
-                        
-                        setFlashMessage('success', 'Welcome back, ' . $user['first_name'] . '!');
-                        redirect('/' . $user['role'] . '/dashboard.php');
-                    } else {
-                        $error = "Your account has been deactivated. Please contact support.";
-                    }
-                } else {
-                    $error = "Invalid email or password.";
+            // Try demo mode first
+            if ($DEMO_MODE && isset($DEMO_ACCOUNTS[$email])) {
+                $demo = $DEMO_ACCOUNTS[$email];
+                if ($demo['password'] === $password) {
+                    $user = $demo;
+                    $loggedIn = true;
                 }
-            } else {
-                // Not found in users, check providers table
-                $stmt = $conn->prepare("SELECT id, email, password, business_name, owner_name, status, is_active FROM providers WHERE email = ? LIMIT 1");
-                $stmt->bind_param("s", $email);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                if ($result->num_rows === 1) {
-                    $provider = $result->fetch_assoc();
-                    if (password_verify($password, $provider['password'])) {
-                        if ($provider['status'] === 'approved' && $provider['is_active'] == 1) {
-                            loginUser($provider, 'provider');
-                            
-                            // Update last login
-                            $updateStmt = $conn->prepare("UPDATE providers SET last_login = NOW() WHERE id = ?");
-                            $updateStmt->bind_param("i", $provider['id']);
-                            $updateStmt->execute();
-                            
-                            setFlashMessage('success', 'Welcome back, ' . $provider['owner_name'] . '!');
-                            redirect('/provider/dashboard.php');
-                        } elseif ($provider['status'] === 'pending') {
-                            $error = "Your provider account is still pending approval.";
+            }
+            
+            // If not demo mode or demo failed, try database
+            if (!$loggedIn) {
+                try {
+                    $conn = getDBConnection();
+                    
+                    // First check users table (Parents/Admins)
+                    $stmt = $conn->prepare("SELECT id, email, password, first_name, last_name, role, is_active FROM users WHERE email = ? LIMIT 1");
+                    if (!$stmt) {
+                        throw new Exception("Database prepare failed: " . $conn->error);
+                    }
+                    $stmt->bind_param("s", $email);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    if ($result->num_rows === 1) {
+                        $dbUser = $result->fetch_assoc();
+                        if (password_verify($password, $dbUser['password'])) {
+                            if ($dbUser['is_active'] == 1) {
+                                $user = $dbUser;
+                                $loggedIn = true;
+                            } else {
+                                $error = "Your account has been deactivated. Please contact support.";
+                            }
                         } else {
-                            $error = "Your account is not active. Status: " . ucfirst($provider['status']);
+                            $error = "Invalid email or password.";
                         }
                     } else {
-                        $error = "Invalid email or password.";
+                        // Not found in users, check providers table
+                        $stmt = $conn->prepare("SELECT id, email, password, business_name, owner_name, status, is_active FROM providers WHERE email = ? LIMIT 1");
+                        if (!$stmt) {
+                            throw new Exception("Database prepare failed: " . $conn->error);
+                        }
+                        $stmt->bind_param("s", $email);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        
+                        if ($result->num_rows === 1) {
+                            $provider = $result->fetch_assoc();
+                            if (password_verify($password, $provider['password'])) {
+                                if ($provider['status'] === 'approved' && $provider['is_active'] == 1) {
+                                    $user = $provider;
+                                    $user['role'] = 'provider';
+                                    $user['name'] = $provider['owner_name'];
+                                    $loggedIn = true;
+                                } elseif ($provider['status'] === 'pending') {
+                                    $error = "Your provider account is still pending approval.";
+                                } else {
+                                    $error = "Your account is not active. Status: " . ucfirst($provider['status']);
+                                }
+                            } else {
+                                $error = "Invalid email or password.";
+                            }
+                        } else {
+                            $error = "Invalid email or password.";
+                        }
                     }
+                } catch (Exception $e) {
+                    error_log("Login error: " . $e->getMessage());
+                    if (!$DEMO_MODE) {
+                        $error = "A system error occurred. Please try again later.";
+                    }
+                }
+            }
+            
+            if ($loggedIn && $user) {
+                loginUser($user, $user['role']);
+                setFlashMessage('success', 'Welcome back, ' . ($user['name'] ?? $user['first_name'] ?? 'User') . '!');
+                $role = $user['role'];
+                $allowedRoles = ['parent', 'provider', 'admin'];
+                if (in_array($role, $allowedRoles)) {
+                    redirect('/' . $role . '/dashboard.php');
                 } else {
-                    $error = "Invalid email or password.";
+                    redirect('/parent/dashboard.php');
                 }
             }
         }
-        $conn->close();
     }
 }
 
@@ -174,6 +220,19 @@ require_once __DIR__ . '/includes/header.php';
                 <a href="provider-register.php" class="btn btn-outline btn-sm">I'm a Provider</a>
             </div>
         </div>
+        
+        <!-- Demo Credentials -->
+        <?php if ($DEMO_MODE): ?>
+        <div style="margin-top: var(--space-lg); padding: var(--space-md); background: #FFF9F0; border: 1px solid #FFE0B2; border-radius: 12px; font-size: 13px;">
+            <strong style="color: #E65100;">🎭 Demo Mode Active</strong> — Use these accounts:
+            <div style="margin-top: 12px; text-align: left; font-family: monospace; font-size: 12px; line-height: 2;">
+                <div><strong>Admin:</strong> admin@littlesteps.com / admin123</div>
+                <div><strong>Provider:</strong> provider@littlesteps.com / provider123</div>
+                <div><strong>Parent:</strong> parent@littlesteps.com / parent123</div>
+            </div>
+            <p style="margin: 8px 0 0; color: #BF360C;">Create <code>.env</code> file to disable demo mode and use database.</p>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 

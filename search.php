@@ -18,7 +18,7 @@ $types = "";
 // Handle search and filters
 $search = isset($_GET['q']) ? sanitizeInput($conn, $_GET['q']) : '';
 $city = isset($_GET['city']) ? sanitizeInput($conn, $_GET['city']) : '';
-$is24x7 = isset($_GET['is_24x7']) ? 1 : 0;
+$is24x7 = (!empty($_GET['is_24x7']) || !empty($_GET['24x7'])) ? 1 : 0;
 
 if (!empty($search)) {
     $query .= " AND (c.name LIKE ? OR c.area LIKE ?)";
