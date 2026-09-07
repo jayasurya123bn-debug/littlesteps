@@ -7,8 +7,9 @@
 ## 🎯 Quick Demo Access
 
 ### Live Demo
-- **Vercel Static Demo:** `https://vercel-demo-eta-blue.vercel.app`
-- **PHP Live Hosting:** `https://little-steps.unaux.com/`
+- **Vercel Production (Main):** `https://little-steps-sable.vercel.app`
+- **Vercel Demo Subproject:** `https://vercel-demo-eta-blue.vercel.app`
+- **PHP Full Platform:** `https://little-steps.unaux.com/`
 
 ### Test Accounts (pre-seeded in database)
 

@@ -1,0 +1,8 @@
+*.zip
+*.sql
+*.ps1
+.env*
+.git
+.system_generated
+uploads/*
+!uploads/.gitkeep

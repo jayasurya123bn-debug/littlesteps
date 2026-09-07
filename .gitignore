@@ -8,3 +8,6 @@ fix_upload.ps1
 uploads/*
 !uploads/.gitkeep
 
+
+.vercel
+.env*
