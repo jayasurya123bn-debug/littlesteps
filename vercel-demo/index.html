@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Little Steps — Trusted 24×7 Childcare Platform | Live Demo</title>
+    <title>Home - Little Steps</title>
     <meta name="description" content="Find vetted caregivers and daycare centers near you, available 24/7. Book in minutes and enjoy peace of mind.">
     
     <!-- Favicon -->
@@ -141,39 +141,7 @@
             border-radius: 10px;
         }
 
-        /* Top Provider Edit Notification Bar */
-        .provider-top-badge {
-            background: linear-gradient(90deg, #AD1457, #E91E63);
-            color: #fff;
-            font-size: 13px;
-            padding: 10px 16px;
-            text-align: center;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .provider-top-badge button {
-            background: #fff;
-            color: var(--dark-pink);
-            border: none;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .provider-top-badge button:hover {
-            background: var(--light-pink);
-            transform: scale(1.05);
-        }
-
-        /* Navigation */
+        /* Navigation (Exact 1:1 match with https://little-steps.unaux.com/index.php) */
         nav {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
@@ -309,32 +277,6 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* Floating Provider Edit Studio Button */
-        .floating-provider-btn {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            background: linear-gradient(135deg, #AD1457, #E91E63);
-            color: #fff;
-            padding: 14px 24px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.4);
-            border: 2px solid #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .floating-provider-btn:hover {
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 14px 35px rgba(233, 30, 99, 0.5);
-        }
-
         /* Modals */
         .modal-overlay {
             position: fixed;
@@ -359,17 +301,17 @@
             background: #fff;
             border-radius: 24px;
             width: 100%;
-            max-width: 680px;
+            max-width: 520px;
             padding: 32px;
             position: relative;
             box-shadow: 0 25px 60px rgba(0,0,0,0.3);
             max-height: 90vh;
             overflow-y: auto;
-            animation: modalFade 0.3s ease;
+            animation: modalFade 0.25s ease;
         }
 
         @keyframes modalFade {
-            from { opacity: 0; transform: scale(0.95); }
+            from { opacity: 0; transform: scale(0.96); }
             to { opacity: 1; transform: scale(1); }
         }
 
@@ -395,45 +337,6 @@
             color: #fff;
         }
 
-        /* 4-Tab Provider Form Style (From provider/center_edit.php) */
-        .form-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid var(--light-pink);
-            padding-bottom: 8px;
-            overflow-x: auto;
-        }
-
-        .form-tab-btn {
-            background: none;
-            border: none;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--medium-gray);
-            cursor: pointer;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            font-family: inherit;
-        }
-
-        .form-tab-btn.active {
-            background: var(--light-pink);
-            color: var(--main-pink);
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
         .form-group {
             margin-bottom: 16px;
         }
@@ -448,7 +351,7 @@
 
         .form-control {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 14px;
             border-radius: 8px;
             border: 1px solid #DEDEDE;
             font-family: inherit;
@@ -467,22 +370,30 @@
             gap: 14px;
         }
 
-        .toggle-switch-row {
+        /* Modal Tabs */
+        .modal-tabs {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--off-white);
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #EAEAEA;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #EEEEEE;
+            padding-bottom: 8px;
         }
 
-        .toggle-switch-row input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--main-pink);
+        .modal-tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--medium-gray);
             cursor: pointer;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .modal-tab-btn.active {
+            background: var(--light-pink);
+            color: var(--main-pink);
         }
 
         /* Toast */
@@ -511,18 +422,6 @@
             opacity: 1;
         }
 
-        /* Live Edited Highlight Pulse */
-        .live-edited-badge {
-            display: inline-block;
-            background: #E8F5E9;
-            color: #2E7D32;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-left: 8px;
-        }
-
         /* Responsive Breakpoints */
         @media (max-width: 991px) {
             .desktop-menu { display: none !important; }
@@ -538,24 +437,12 @@
         @media (max-width: 600px) {
             .hero-h1 { font-size: 2rem; }
             .form-grid-2 { grid-template-columns: 1fr; }
-            .floating-provider-btn { bottom: 16px; right: 16px; font-size: 12px; padding: 12px 18px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 0. Top Provider Live Edit Bar -->
-    <div class="provider-top-badge">
-        <span>✨ <strong>Provider Live Editing Active:</strong> You can edit daycare center details, pricing, and amenities directly.</span>
-        <button onclick="openProviderEditModal()">
-            <i class="fas fa-edit"></i> Edit Center Details
-        </button>
-        <button onclick="resetProviderDefaults()" style="background: transparent; border: 1px solid #fff; color: #fff;">
-            Reset
-        </button>
-    </div>
-
-    <!-- NAVBAR (Matches https://little-steps.unaux.com/index.php exactly) -->
+    <!-- NAVBAR (Exact 1:1 match with https://little-steps.unaux.com/index.php) -->
     <nav>
         <div class="container nav-container">
             <!-- Logo -->
@@ -572,16 +459,13 @@
                 <a href="javascript:void(0)" onclick="openSearchModal()">Find Care</a>
                 <a href="#features">Services</a>
                 <a href="#how-it-works">How It Works</a>
-                <a href="#about-modal" onclick="openAboutModal()">About Us</a>
+                <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
                 <a href="#contact" onclick="scrollToFooter()">Contact</a>
                 
                 <div class="nav-divider"></div>
                 
                 <a href="javascript:void(0)" onclick="openLoginModal()" style="color: var(--medium-gray); font-weight: 500;">Log In</a>
-                <a href="javascript:void(0)" onclick="openRegisterModal()" class="btn btn-primary">Sign Up</a>
-                <button class="btn btn-outline" style="padding: 8px 16px; font-size: 13px; border-color: var(--main-pink); color: var(--main-pink);" onclick="openProviderEditModal()">
-                    <i class="fas fa-store"></i> Provider Edit
-                </button>
+                <a href="javascript:void(0)" onclick="openRegisterModal('parent')" class="btn btn-primary" style="padding: 10px 24px;">Sign Up</a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -601,30 +485,23 @@
         <a href="#contact" onclick="scrollToFooter(); document.getElementById('mobileMenu').classList.remove('active');">Contact</a>
         
         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
-            <button class="btn btn-outline" onclick="openProviderEditModal(); document.getElementById('mobileMenu').classList.remove('active');" style="width: 100%;">
-                <i class="fas fa-edit"></i> Provider Edit Center
-            </button>
-            <button class="btn btn-outline" onclick="openLoginModal(); document.getElementById('mobileMenu').classList.remove('active');" style="width: 100%;">
-                Log In
-            </button>
-            <button class="btn btn-primary" onclick="openRegisterModal(); document.getElementById('mobileMenu').classList.remove('active');" style="width: 100%;">
-                Sign Up
-            </button>
+            <a href="javascript:void(0)" onclick="openLoginModal(); document.getElementById('mobileMenu').classList.remove('active');" class="btn btn-outline" style="width: 100%;">Log In</a>
+            <a href="javascript:void(0)" onclick="openRegisterModal('parent'); document.getElementById('mobileMenu').classList.remove('active');" class="btn btn-primary" style="width: 100%;">Sign Up</a>
         </div>
     </div>
 
-    <!-- 1. HERO SECTION (Exact structure, markup & imagery) -->
+    <!-- 1. HERO SECTION (Exact structure, markup & imagery from live site) -->
     <section style="background: linear-gradient(180deg, var(--light-pink) 0%, var(--white) 100%); padding: 120px 0 80px; overflow: hidden;">
         <div class="container hero-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
             
             <div style="z-index: 2;">
                 <div style="display: inline-block; background: var(--white); border-radius: 50px; padding: 8px 20px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.08); border: 1px solid var(--light-pink);">
-                    <span style="font-size: 14px; font-weight: 600; color: var(--dark-gray);" id="heroBadgeText">Trusted by 10,000+ parents</span>
+                    <span style="font-size: 14px; font-weight: 600; color: var(--dark-gray);">Trusted by 10,000+ parents</span>
                 </div>
                 
-                <h1 class="hero-h1" id="heroHeadline">Safe, Loving Childcare for Your Little Ones</h1>
+                <h1 class="hero-h1">Safe, Loving Childcare for Your Little Ones</h1>
                 
-                <p class="hero-sub" id="heroSubtext">
+                <p class="hero-sub">
                     Find vetted caregivers and daycare centers near you, available 24/7. Book in minutes and enjoy peace of mind.
                 </p>
                 
@@ -643,7 +520,7 @@
                         <div style="color: var(--main-pink); font-size: 16px; margin-bottom: 2px;">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                         </div>
-                        <span style="font-size: 13px; font-weight: 600; color: var(--dark-gray);" id="heroRatingText">4.9/5 from 2,300 reviews</span>
+                        <span style="font-size: 13px; font-weight: 600; color: var(--dark-gray);">4.9/5 from 2,300 reviews</span>
                     </div>
                 </div>
             </div>
@@ -662,7 +539,7 @@
                     </div>
                     <div>
                         <div style="font-weight: 700; font-size: 14px; color: var(--near-black);">100% Verified</div>
-                        <div style="font-size: 12px; color: var(--medium-gray);" id="heroVerifiedSub">Caregivers & Centers</div>
+                        <div style="font-size: 12px; color: var(--medium-gray);">Caregivers</div>
                     </div>
                 </div>
             </div>
@@ -683,7 +560,7 @@
                         <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Safety First</h3>
-                            <p style="color: #616161; font-size: 15px; margin: 0;" id="featSafetyText">Stringent background checks and CCTV-enabled centers for absolute peace of mind.</p>
+                            <p style="color: #616161; font-size: 15px; margin: 0;">Stringent background checks and CCTV-enabled centers for absolute peace of mind.</p>
                         </div>
                     </div>
                     
@@ -692,7 +569,7 @@
                         <div class="feature-icon"><i class="fas fa-clock"></i></div>
                         <div>
                             <h3 style="font-size: 1.25rem; margin-bottom: 8px;">24/7 Availability</h3>
-                            <p style="color: #616161; font-size: 15px; margin: 0;" id="featHoursText">Flexible timings to support shift workers and unexpected emergency drop-ins.</p>
+                            <p style="color: #616161; font-size: 15px; margin: 0;">Flexible timings to support shift workers and unexpected emergency drop-ins.</p>
                         </div>
                     </div>
                     
@@ -794,13 +671,10 @@
         </div>
     </section>
 
-    <!-- 5. PRICING SECTION (Dynamically Editable by Provider!) -->
+    <!-- 5. PRICING SECTION (Exact structure & numbers from live site) -->
     <section id="pricing" class="section-padding" style="background: var(--baby-pink);">
         <div class="container">
-            <h2 class="section-title">
-                Simple, Transparent Pricing
-                <span id="providerEditedBadge" style="display:none;" class="live-edited-badge">Customized by Provider</span>
-            </h2>
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
             <p class="section-sub">Choose a plan that fits your childcare needs.</p>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; align-items: center; max-width: 1000px; margin: 0 auto;">
@@ -809,7 +683,7 @@
                 <div class="pricing-card">
                     <h3 style="font-size: 1.5rem; color: var(--dark-gray); margin-bottom: 16px;">Hourly Drop-in</h3>
                     <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">
-                        <span id="displayHourlyPrice">₹250</span><span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/hr</span>
+                        ₹250<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/hr</span>
                     </div>
                     <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">Perfect for occasional needs.</p>
                     
@@ -827,7 +701,7 @@
                     <div class="popular-badge">Most Popular</div>
                     <h3 style="font-size: 1.5rem; color: var(--main-pink); margin-bottom: 16px;">Weekly Standard</h3>
                     <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">
-                        <span id="displayWeeklyPrice">₹4500</span><span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/wk</span>
+                        ₹4500<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/wk</span>
                     </div>
                     <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">Ideal for regular working hours.</p>
                     
@@ -835,7 +709,7 @@
                         <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--main-pink); width: 24px;"></i> Guaranteed slot</li>
                         <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--main-pink); width: 24px;"></i> Priority support</li>
                         <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--main-pink); width: 24px;"></i> Full daily reports</li>
-                        <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--main-pink); width: 24px;"></i> <span id="displayMealsFeature">Includes meals</span></li>
+                        <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--main-pink); width: 24px;"></i> Includes meals</li>
                     </ul>
                     
                     <button class="btn btn-primary" style="width: 100%;" onclick="openBookingModal('Weekly Standard')">Subscribe Now</button>
@@ -845,12 +719,12 @@
                 <div class="pricing-card">
                     <h3 style="font-size: 1.5rem; color: var(--dark-gray); margin-bottom: 16px;">Monthly Premium</h3>
                     <div style="font-size: 3rem; font-weight: 700; color: var(--near-black); margin-bottom: 8px;">
-                        <span id="displayMonthlyPrice">₹15000</span><span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/mo</span>
+                        ₹15000<span style="font-size: 16px; color: var(--medium-gray); font-weight: 500;">/mo</span>
                     </div>
                     <p style="color: var(--medium-gray); font-size: 14px; margin-bottom: 32px;">For complete 24/7 flexibility.</p>
                     
                     <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 32px;">
-                        <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--success); width: 24px;"></i> <span id="display247Feature">Unrestricted 24x7 access</span></li>
+                        <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--success); width: 24px;"></i> Unrestricted 24x7 access</li>
                         <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--success); width: 24px;"></i> 1-on-1 tutoring options</li>
                         <li style="margin-bottom: 12px; font-size: 15px; color: var(--dark-gray);"><i class="fas fa-check" style="color: var(--success); width: 24px;"></i> Premium medical coverage</li>
                     </ul>
@@ -862,18 +736,16 @@
         </div>
     </section>
 
-    <!-- 6. FOR PROVIDERS BANNER (Directly opens the Provider Editor) -->
+    <!-- 6. FOR PROVIDERS BANNER (Exact text & button from live site) -->
     <section style="background: var(--dark-pink); padding: 80px 0;">
         <div class="container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px;">
             <div>
-                <h2 style="color: var(--white); font-size: 2.5rem; margin-bottom: 12px;" id="providerBannerTitle">Are you a childcare provider?</h2>
-                <p style="color: rgba(255,255,255,0.9); font-size: 1.125rem; margin: 0;" id="providerBannerSub">Join our network and grow your business with Little Steps's platform.</p>
+                <h2 style="color: var(--white); font-size: 2.5rem; margin-bottom: 12px;">Are you a childcare provider?</h2>
+                <p style="color: rgba(255,255,255,0.9); font-size: 1.125rem; margin: 0;">Join our network and grow your business with Little Steps's platform.</p>
             </div>
-            <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-                <button onclick="openProviderEditModal()" class="btn" style="background: var(--white); color: var(--dark-pink); padding: 16px 40px; font-size: 16px; font-weight: 700;">
-                    <i class="fas fa-edit"></i> Edit Center Details
-                </button>
-            </div>
+            <button onclick="openRegisterModal('provider')" class="btn" style="background: var(--white); color: var(--dark-pink); padding: 16px 40px; font-size: 16px; font-weight: 600;">
+                Become a Provider
+            </button>
         </div>
     </section>
 
@@ -909,7 +781,7 @@
                         <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openSearchModal()" style="color: #BDBDBD;">Find Care</a></li>
                         <li style="margin-bottom: 12px;"><a href="#features" style="color: #BDBDBD;">Services</a></li>
                         <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openAboutModal()" style="color: #BDBDBD;">About Us</a></li>
-                        <li style="margin-bottom: 12px;"><a href="#contact" style="color: #BDBDBD;">Contact Us</a></li>
+                        <li style="margin-bottom: 12px;"><a href="#contact" onclick="scrollToFooter()" style="color: #BDBDBD;">Contact Us</a></li>
                     </ul>
                 </div>
                 
@@ -917,9 +789,9 @@
                 <div>
                     <h4 style="color: var(--white); margin-bottom: 24px; font-weight: 600;">For Providers</h4>
                     <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openProviderEditModal()" style="color: #BDBDBD;">Edit Center Profile</a></li>
+                        <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openRegisterModal('provider')" style="color: #BDBDBD;">Join as a Provider</a></li>
                         <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openLoginModal()" style="color: #BDBDBD;">Provider Login</a></li>
-                        <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openProviderEditModal()" style="color: #BDBDBD;">Manage Rates &amp; Hours</a></li>
+                        <li style="margin-bottom: 12px;"><a href="javascript:void(0)" onclick="openSearchModal()" style="color: #BDBDBD;">Provider Resources</a></li>
                         <li style="margin-bottom: 12px;"><a href="#features" style="color: #BDBDBD;">Safety Guidelines</a></li>
                     </ul>
                 </div>
@@ -930,15 +802,15 @@
                     <ul style="list-style: none; color: #BDBDBD; font-size: 15px; padding: 0;">
                         <li style="margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start;">
                             <i class="fas fa-map-marker-alt" style="color: var(--main-pink); margin-top: 4px;"></i> 
-                            <span id="footerAddress">123 Little Care Avenue,<br>Tech City, TC 10010</span>
+                            <span>123 Little Care Avenue,<br>Tech City, TC 10010</span>
                         </li>
                         <li style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
                             <i class="fas fa-envelope" style="color: var(--main-pink);"></i> 
-                            <a href="mailto:hello@littlecare.com" style="color: #BDBDBD;" id="footerEmail">hello@littlecare.com</a>
+                            <a href="mailto:hello@littlecare.com" style="color: #BDBDBD;">hello@littlecare.com</a>
                         </li>
                         <li style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
                             <i class="fas fa-phone" style="color: var(--main-pink);"></i> 
-                            <a href="tel:+18005551234" style="color: #BDBDBD;" id="footerPhone">+1 (800) 555-1234</a>
+                            <a href="tel:+18005551234" style="color: #BDBDBD;">+1 (800) 555-1234</a>
                         </li>
                     </ul>
                 </div>
@@ -958,175 +830,175 @@
         </div>
     </footer>
 
-    <!-- Floating Action Button for Quick Provider Editing -->
-    <button class="floating-provider-btn" onclick="openProviderEditModal()" title="Edit Center & Rates">
-        <i class="fas fa-pencil-alt"></i> Provider Edit Center
-    </button>
-
     <!-- ================================================================= -->
-    <!-- INTERACTIVE MODAL 1: PROVIDER CENTER EDIT STUDIO (4 TABS)        -->
-    <!-- (Based directly on provider/center_edit.php)                      -->
+    <!-- INTERACTIVE MODAL 1: DEMO LOGIN MODAL                             -->
     <!-- ================================================================= -->
-    <div class="modal-overlay" id="providerEditModal">
+    <div class="modal-overlay" id="loginModal">
         <div class="modal-box">
-            <button class="modal-close" onclick="closeModal('providerEditModal')">&times;</button>
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--light-pink); color: var(--main-pink); display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-store"></i>
-                </div>
-                <h3 style="font-size: 20px; font-weight: 700; color: var(--near-black);">Provider Daycare Center Editor</h3>
-            </div>
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h3 style="font-size: 22px; font-weight: 700; color: var(--near-black); margin-bottom: 6px;">Sign In to Little Steps</h3>
             <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 20px;">
-                Update your daycare center details, pricing, and operating rules. Changes update the live site instantly!
+                Demo mode active. Select a role for 1-click access or enter your credentials:
             </p>
 
-            <!-- 4 Tab Bar -->
-            <div class="form-tabs">
-                <button type="button" class="form-tab-btn active" onclick="switchProviderTab('basic', this)">
-                    <i class="fas fa-info-circle"></i> 1. Basic Info
-                </button>
-                <button type="button" class="form-tab-btn" onclick="switchProviderTab('operations', this)">
-                    <i class="fas fa-clock"></i> 2. Operations &amp; Timings
-                </button>
-                <button type="button" class="form-tab-btn" onclick="switchProviderTab('safety', this)">
-                    <i class="fas fa-shield-alt"></i> 3. Safety &amp; Amenities
-                </button>
-                <button type="button" class="form-tab-btn" onclick="switchProviderTab('pricing', this)">
-                    <i class="fas fa-tag"></i> 4. Pricing &amp; Rates
-                </button>
+            <!-- 1-Click Role Logins -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--near-black); font-size: 14px;">👨‍👩‍👧 Parent Portal</strong>
+                        <div style="font-size: 12px; color: var(--medium-gray);"><code>parent@littlesteps.com</code> / <code>parent123</code></div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="simulateLogin('Parent')">Login</button>
+                </div>
+                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--near-black); font-size: 14px;">🏫 Daycare Provider</strong>
+                        <div style="font-size: 12px; color: var(--medium-gray);"><code>provider@littlesteps.com</code> / <code>provider123</code></div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="simulateLogin('Provider')">Login</button>
+                </div>
+                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--near-black); font-size: 14px;">🛡️ Super Admin</strong>
+                        <div style="font-size: 12px; color: var(--medium-gray);"><code>admin@littlesteps.com</code> / <code>admin123</code></div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="simulateLogin('Admin')">Login</button>
+                </div>
             </div>
 
-            <form id="providerEditForm" onsubmit="saveProviderChanges(event)">
-                <!-- Tab 1: Basic Info -->
-                <div class="tab-panel active" id="tab-basic">
-                    <div class="form-group">
-                        <label>Daycare Center Name *</label>
-                        <input type="text" id="editCenterName" class="form-control" required value="Little Steps Montessori & Care">
-                    </div>
-                    <div class="form-group">
-                        <label>Hero Headline (Custom Welcome)</label>
-                        <input type="text" id="editHeadline" class="form-control" value="Safe, Loving Childcare for Your Little Ones">
-                    </div>
-                    <div class="form-group">
-                        <label>Hero Subtitle / Description</label>
-                        <textarea id="editSubtext" class="form-control" rows="2">Find vetted caregivers and daycare centers near you, available 24/7. Book in minutes and enjoy peace of mind.</textarea>
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>Contact Phone</label>
-                            <input type="tel" id="editPhone" class="form-control" value="+1 (800) 555-1234">
-                        </div>
-                        <div class="form-group">
-                            <label>Contact Email</label>
-                            <input type="email" id="editEmail" class="form-control" value="hello@littlecare.com">
-                        </div>
-                    </div>
+            <!-- Standard Login Form -->
+            <form onsubmit="handleFormLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="name@example.com" required>
                 </div>
-
-                <!-- Tab 2: Operations & Timings -->
-                <div class="tab-panel" id="tab-operations">
-                    <div class="toggle-switch-row">
-                        <div>
-                            <strong>24×7 Shift Operations</strong>
-                            <div style="font-size: 12px; color: var(--medium-gray);">Accept night shift and emergency drop-ins around the clock.</div>
-                        </div>
-                        <input type="checkbox" id="edit247" checked>
-                    </div>
-
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>Opening Time</label>
-                            <input type="time" id="editStartTime" class="form-control" value="07:00">
-                        </div>
-                        <div class="form-group">
-                            <label>Closing Time</label>
-                            <input type="time" id="editEndTime" class="form-control" value="20:00">
-                        </div>
-                    </div>
-
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>Total Child Capacity</label>
-                            <input type="number" id="editCapacity" class="form-control" value="35">
-                        </div>
-                        <div class="form-group">
-                            <label>Curriculum Model</label>
-                            <select id="editCurriculum" class="form-control">
-                                <option value="Montessori & Playway">Montessori &amp; Playway</option>
-                                <option value="Reggio Emilia">Reggio Emilia</option>
-                                <option value="Early Learning Foundation">Early Learning Foundation</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
                 </div>
-
-                <!-- Tab 3: Safety & Amenities -->
-                <div class="tab-panel" id="tab-safety">
-                    <div class="toggle-switch-row">
-                        <div>
-                            <strong>Live CCTV App Streaming</strong>
-                            <div style="font-size: 12px; color: var(--medium-gray);">Parents get mobile stream access during child check-in.</div>
-                        </div>
-                        <input type="checkbox" id="editCctv" checked>
-                    </div>
-
-                    <div class="toggle-switch-row">
-                        <div>
-                            <strong>Organic Daily Meals &amp; Snacks</strong>
-                            <div style="font-size: 12px; color: var(--medium-gray);">Fresh meals prepared in a pediatric-certified kitchen.</div>
-                        </div>
-                        <input type="checkbox" id="editMeals" checked>
-                    </div>
-
-                    <div class="toggle-switch-row">
-                        <div>
-                            <strong>Pediatric Nurse on Active Duty</strong>
-                            <div style="font-size: 12px; color: var(--medium-gray);">First-aid certified staff on-site at all times.</div>
-                        </div>
-                        <input type="checkbox" id="editNurse" checked>
-                    </div>
-                </div>
-
-                <!-- Tab 4: Pricing & Rates -->
-                <div class="tab-panel" id="tab-pricing">
-                    <div class="form-group">
-                        <label>Hourly Drop-in Rate (₹/hr) *</label>
-                        <input type="number" id="editHourly" class="form-control" required value="250">
-                    </div>
-                    <div class="form-group">
-                        <label>Weekly Standard Rate (₹/wk) *</label>
-                        <input type="number" id="editWeekly" class="form-control" required value="4500">
-                    </div>
-                    <div class="form-group">
-                        <label>Monthly Premium Rate (₹/mo) *</label>
-                        <input type="number" id="editMonthly" class="form-control" required value="15000">
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #EAEAEA;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px;">
-                        <i class="fas fa-save"></i> Save &amp; Update Live Site
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="closeModal('providerEditModal')" style="padding: 12px 20px;">
-                        Cancel
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;">
+                    Sign In
+                </button>
             </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--medium-gray);">
+                Don't have an account? <a href="javascript:void(0)" onclick="closeModal('loginModal'); openRegisterModal('parent');" style="font-weight: 600;">Sign Up</a>
+                <div style="margin-top: 10px;">
+                    Live PHP Server: <a href="https://little-steps.unaux.com/login.php" target="_blank" style="font-weight: 600;">little-steps.unaux.com/login.php <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- ================================================================= -->
-    <!-- INTERACTIVE MODAL 2: SEARCH DAYCARE CENTERS (Find Care)           -->
+    <!-- INTERACTIVE MODAL 2: REGISTER MODAL (Parent & Provider Tabs)      -->
+    <!-- ================================================================= -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h3 style="font-size: 22px; font-weight: 700; color: var(--near-black); margin-bottom: 6px;">Create Your Account</h3>
+            <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 16px;">
+                Join 10,000+ happy families and certified childcare providers.
+            </p>
+
+            <!-- Role Tabs -->
+            <div class="modal-tabs">
+                <button type="button" class="modal-tab-btn active" id="tabParentBtn" onclick="switchRegisterTab('parent')">
+                    👨‍👩‍👧 Parent Sign Up
+                </button>
+                <button type="button" class="modal-tab-btn" id="tabProviderBtn" onclick="switchRegisterTab('provider')">
+                    🏫 Provider Registration
+                </button>
+            </div>
+
+            <!-- Parent Form -->
+            <form id="parentRegisterForm" onsubmit="handleRegisterSubmit(event, 'Parent')">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" class="form-control" placeholder="Priya" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" class="form-control" placeholder="Sharma" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" class="form-control" placeholder="priya@example.com" required>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" class="form-control" placeholder="+91 98765 43210" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;">
+                    Complete Parent Registration
+                </button>
+            </form>
+
+            <!-- Provider Form -->
+            <form id="providerRegisterForm" style="display: none;" onsubmit="handleRegisterSubmit(event, 'Provider')">
+                <div class="form-group">
+                    <label>Daycare / Center Name *</label>
+                    <input type="text" class="form-control" placeholder="Sunshine Montessori & Crèche" required>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Owner / Director Name *</label>
+                        <input type="text" class="form-control" placeholder="Anita Verma" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" class="form-control" placeholder="Bangalore" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" class="form-control" placeholder="contact@sunshinecare.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" class="form-control" placeholder="+91 Contact Phone" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Operating Timings</label>
+                    <select class="form-control">
+                        <option>24×7 Shift Operations (Anytime)</option>
+                        <option>Standard Daytime (7:00 AM – 7:00 PM)</option>
+                        <option>Night Shift Specialist (7:00 PM – 7:00 AM)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;">
+                    Submit Provider Application
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--medium-gray);">
+                Already have an account? <a href="javascript:void(0)" onclick="closeModal('registerModal'); openLoginModal();" style="font-weight: 600;">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- INTERACTIVE MODAL 3: SEARCH DAYCARE CENTERS (Find Care)           -->
     <!-- ================================================================= -->
     <div class="modal-overlay" id="searchModal">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal('searchModal')">&times;</button>
-            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Find Vetted Childcare Centers</h3>
-            <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 20px;">Filter by city, timings, and safety amenities:</p>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Find Vetted Daycare Centers</h3>
+            <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 20px;">Browse audited childcare centers near you:</p>
 
             <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                 <select id="searchCityFilter" class="form-control" style="flex: 1; min-width: 140px;" onchange="applySearchFilters()">
-                    <option value="all">All Cities</option>
+                    <option value="all">All Locations</option>
                     <option value="Bangalore">Bangalore</option>
                     <option value="Mumbai">Mumbai</option>
                     <option value="Gurgaon">Gurgaon</option>
@@ -1140,55 +1012,16 @@
             </div>
 
             <div id="searchCentersResults" style="display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto;">
-                <!-- Dynamically rendered -->
+                <!-- Rendered dynamically -->
             </div>
         </div>
     </div>
 
     <!-- ================================================================= -->
-    <!-- INTERACTIVE MODAL 3: DEMO LOGINS                                  -->
-    <!-- ================================================================= -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box" style="max-width: 500px;">
-            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
-            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Sign In to Little Steps</h3>
-            <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 20px;">Use demo credentials to explore the platform:</p>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong style="color: var(--near-black); font-size: 14px;">Provider Portal</strong>
-                        <div style="font-size: 12px; color: var(--medium-gray);"><code>provider@littlesteps.com</code> / <code>provider123</code></div>
-                    </div>
-                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="quickLogin('provider')">Enter</button>
-                </div>
-                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong style="color: var(--near-black); font-size: 14px;">Parent Dashboard</strong>
-                        <div style="font-size: 12px; color: var(--medium-gray);"><code>parent@littlesteps.com</code> / <code>parent123</code></div>
-                    </div>
-                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="quickLogin('parent')">Enter</button>
-                </div>
-                <div style="background: var(--off-white); border: 1px solid #EAEAEA; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong style="color: var(--near-black); font-size: 14px;">Admin Control</strong>
-                        <div style="font-size: 12px; color: var(--medium-gray);"><code>admin@littlesteps.com</code> / <code>admin123</code></div>
-                    </div>
-                    <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="quickLogin('admin')">Enter</button>
-                </div>
-            </div>
-
-            <div style="text-align: center; font-size: 12px; color: var(--medium-gray);">
-                Or visit the full PHP backend: <a href="https://little-steps.unaux.com/login.php" target="_blank" style="font-weight: 700;">little-steps.unaux.com/login.php <i class="fas fa-external-link-alt"></i></a>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================================================================= -->
-    <!-- INTERACTIVE MODAL 4: BOOK CARE / REGISTRATION                     -->
+    <!-- INTERACTIVE MODAL 4: BOOKING MODAL                                -->
     <!-- ================================================================= -->
     <div class="modal-overlay" id="bookingModal">
-        <div class="modal-box" style="max-width: 520px;">
+        <div class="modal-box">
             <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
             <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Book Childcare Reservation</h3>
             <p style="font-size: 13px; color: var(--medium-gray); margin-bottom: 20px;" id="bookingPlanLabel">Selected Plan: Standard Daycare</p>
@@ -1209,7 +1042,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Preferred Date *</label>
+                    <label>Preferred Start Date *</label>
                     <input type="date" id="bookDateInput" class="form-control" required>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px;">
@@ -1219,19 +1052,22 @@
         </div>
     </div>
 
-    <!-- About Modal -->
+    <!-- ================================================================= -->
+    <!-- INTERACTIVE MODAL 5: ABOUT US MODAL                               -->
+    <!-- ================================================================= -->
     <div class="modal-overlay" id="aboutModal">
-        <div class="modal-box" style="max-width: 540px;">
+        <div class="modal-box">
             <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
-            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">About Little Steps</h3>
+            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--near-black);">About Little Steps</h3>
             <p style="color: #616161; font-size: 14px; line-height: 1.7; margin-bottom: 16px;">
-                Little Steps was built to solve the modern childcare crisis. Whether parents need structured daytime Montessori schooling, shift-based evening care, or 24×7 emergency supervision, our platform connects them with rigorously audited daycare providers.
+                Little Steps was founded to provide trusted, flexible, and verified 24×7 childcare solutions for modern working families. We connect loving parents with background-checked caregivers and rigorously audited daycare centers.
             </p>
-            <div style="background: var(--light-pink); padding: 14px; border-radius: 12px; font-size: 13px; color: var(--dark-pink); line-height: 1.6;">
-                <strong>Platform Standards:</strong>
-                <div>✓ 42-point in-person safety audit</div>
-                <div>✓ Live encrypted CCTV app access</div>
-                <div>✓ 100% police background check for caregivers</div>
+            <div style="background: var(--light-pink); padding: 16px; border-radius: 12px; font-size: 13px; color: var(--dark-pink); line-height: 1.8;">
+                <strong>Our Core Standards:</strong>
+                <div>✓ 42-point physical safety inspection for every center</div>
+                <div>✓ Live encrypted CCTV camera app access for parents</div>
+                <div>✓ Police criminal background checks for all caregivers</div>
+                <div>✓ Pediatric first-aid certified staff on-site 24/7</div>
             </div>
         </div>
     </div>
@@ -1239,12 +1075,10 @@
     <!-- Toast Element -->
     <div id="toast">
         <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
-        <span id="toastMsg">Updated successfully!</span>
+        <span id="toastMsg">Action completed successfully!</span>
     </div>
 
-    <!-- ================================================================= -->
-    <!-- SCRIPT LOGIC: PROVIDER LIVE EDITING, SEARCH, STORAGE & MODALS    -->
-    <!-- ================================================================= -->
+    <!-- JavaScript Logic -->
     <script>
         // Sample Daycares for Search Modal
         const daycareList = [
@@ -1254,126 +1088,7 @@
             { name: "Rainbow Kids International", city: "Chennai", area: "Anna Nagar", rating: "4.7★", tags: ["Infant", "CCTV"], price: "₹220/hr" }
         ];
 
-        // 1. PROVIDER EDITING ENGINE
-        const defaultProviderData = {
-            centerName: "Little Steps Montessori & Care",
-            headline: "Safe, Loving Childcare for Your Little Ones",
-            subtext: "Find vetted caregivers and daycare centers near you, available 24/7. Book in minutes and enjoy peace of mind.",
-            phone: "+1 (800) 555-1234",
-            email: "hello@littlecare.com",
-            is247: true,
-            hasMeals: true,
-            hasCctv: true,
-            hasNurse: true,
-            hourlyPrice: 250,
-            weeklyPrice: 4500,
-            monthlyPrice: 15000,
-            startTime: "07:00",
-            endTime: "20:00",
-            capacity: 35
-        };
-
-        function getProviderData() {
-            try {
-                const stored = localStorage.getItem('littleSteps_providerData');
-                if (stored) return JSON.parse(stored);
-            } catch (e) {
-                console.error("Storage error:", e);
-            }
-            return { ...defaultProviderData };
-        }
-
-        function applyProviderDataToUI(data) {
-            // Update Hero
-            document.getElementById('heroHeadline').innerText = data.headline || defaultProviderData.headline;
-            document.getElementById('heroSubtext').innerText = data.subtext || defaultProviderData.subtext;
-            
-            // Update Pricing Cards
-            document.getElementById('displayHourlyPrice').innerText = '₹' + data.hourlyPrice;
-            document.getElementById('displayWeeklyPrice').innerText = '₹' + data.weeklyPrice;
-            document.getElementById('displayMonthlyPrice').innerText = '₹' + data.monthlyPrice;
-
-            // Features text
-            document.getElementById('displayMealsFeature').innerText = data.hasMeals ? "Includes meals & snacks" : "Meals on parent request";
-            document.getElementById('display247Feature').innerText = data.is247 ? "Unrestricted 24x7 access" : `Operating ${data.startTime} - ${data.endTime}`;
-            document.getElementById('featHoursText').innerText = data.is247 ? "Flexible 24/7 timings to support shift workers and emergency drop-ins." : `Open daily from ${data.startTime} to ${data.endTime}.`;
-
-            // Contact Info
-            document.getElementById('footerPhone').innerText = data.phone;
-            document.getElementById('footerPhone').href = 'tel:' + data.phone;
-            document.getElementById('footerEmail').innerText = data.email;
-            document.getElementById('footerEmail').href = 'mailto:' + data.email;
-
-            // Highlight Badge if customized
-            const isCustom = (data.hourlyPrice !== 250 || data.weeklyPrice !== 4500 || data.headline !== defaultProviderData.headline);
-            document.getElementById('providerEditedBadge').style.display = isCustom ? 'inline-block' : 'none';
-        }
-
-        function populateProviderForm(data) {
-            document.getElementById('editCenterName').value = data.centerName || '';
-            document.getElementById('editHeadline').value = data.headline || '';
-            document.getElementById('editSubtext').value = data.subtext || '';
-            document.getElementById('editPhone').value = data.phone || '';
-            document.getElementById('editEmail').value = data.email || '';
-            document.getElementById('editHourly').value = data.hourlyPrice || 250;
-            document.getElementById('editWeekly').value = data.weeklyPrice || 4500;
-            document.getElementById('editMonthly').value = data.monthlyPrice || 15000;
-            document.getElementById('edit247').checked = !!data.is247;
-            document.getElementById('editMeals').checked = !!data.hasMeals;
-            document.getElementById('editCctv').checked = !!data.hasCctv;
-            document.getElementById('editNurse').checked = !!data.hasNurse;
-            document.getElementById('editStartTime').value = data.startTime || '07:00';
-            document.getElementById('editEndTime').value = data.endTime || '20:00';
-            document.getElementById('editCapacity').value = data.capacity || 35;
-        }
-
-        function saveProviderChanges(e) {
-            e.preventDefault();
-            const data = {
-                centerName: document.getElementById('editCenterName').value.trim(),
-                headline: document.getElementById('editHeadline').value.trim(),
-                subtext: document.getElementById('editSubtext').value.trim(),
-                phone: document.getElementById('editPhone').value.trim(),
-                email: document.getElementById('editEmail').value.trim(),
-                is247: document.getElementById('edit247').checked,
-                hasMeals: document.getElementById('editMeals').checked,
-                hasCctv: document.getElementById('editCctv').checked,
-                hasNurse: document.getElementById('editNurse').checked,
-                hourlyPrice: parseFloat(document.getElementById('editHourly').value) || 250,
-                weeklyPrice: parseFloat(document.getElementById('editWeekly').value) || 4500,
-                monthlyPrice: parseFloat(document.getElementById('editMonthly').value) || 15000,
-                startTime: document.getElementById('editStartTime').value,
-                endTime: document.getElementById('editEndTime').value,
-                capacity: parseInt(document.getElementById('editCapacity').value) || 35
-            };
-
-            try {
-                localStorage.setItem('littleSteps_providerData', JSON.stringify(data));
-            } catch (err) {
-                console.error(err);
-            }
-
-            applyProviderDataToUI(data);
-            closeModal('providerEditModal');
-            showToast("Daycare center details & rates updated successfully!");
-        }
-
-        function resetProviderDefaults() {
-            localStorage.removeItem('littleSteps_providerData');
-            applyProviderDataToUI(defaultProviderData);
-            populateProviderForm(defaultProviderData);
-            showToast("Reset to default center rates & settings.");
-        }
-
-        // Tab Switching inside Provider Modal
-        function switchProviderTab(tabName, btn) {
-            document.querySelectorAll('.form-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('tab-' + tabName).classList.add('active');
-        }
-
-        // 2. MODALS & POPUPS
+        // Modals Open/Close
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -1382,9 +1097,21 @@
             document.getElementById(id).classList.remove('active');
         }
 
-        function openProviderEditModal() {
-            populateProviderForm(getProviderData());
-            openModal('providerEditModal');
+        function openLoginModal() {
+            openModal('loginModal');
+        }
+
+        function openRegisterModal(role) {
+            switchRegisterTab(role || 'parent');
+            openModal('registerModal');
+        }
+
+        function switchRegisterTab(role) {
+            const isParent = (role === 'parent');
+            document.getElementById('tabParentBtn').classList.toggle('active', isParent);
+            document.getElementById('tabProviderBtn').classList.toggle('active', !isParent);
+            document.getElementById('parentRegisterForm').style.display = isParent ? 'block' : 'none';
+            document.getElementById('providerRegisterForm').style.display = isParent ? 'none' : 'block';
         }
 
         function openSearchModal() {
@@ -1392,43 +1119,48 @@
             openModal('searchModal');
         }
 
-        function openLoginModal() {
-            openModal('loginModal');
-        }
-
-        function openRegisterModal() {
-            openBookingModal('Parent Enrollment Account');
-        }
-
         function openAboutModal() {
             openModal('aboutModal');
         }
 
         function openBookingModal(planTitle) {
-            document.getElementById('bookingPlanLabel').innerText = 'Selected Plan / Center: ' + planTitle;
+            document.getElementById('bookingPlanLabel').innerText = 'Selected Plan / Care: ' + planTitle;
             document.getElementById('bookDateInput').value = new Date().toISOString().split('T')[0];
             openModal('bookingModal');
+        }
+
+        // Action Handlers
+        function simulateLogin(role) {
+            closeModal('loginModal');
+            showToast(`Welcome back! Logged in as ${role} (Demo Account).`);
+        }
+
+        function handleFormLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            closeModal('loginModal');
+            showToast(`Signed in successfully as ${email}!`);
+            e.target.reset();
+        }
+
+        function handleRegisterSubmit(e, roleName) {
+            e.preventDefault();
+            closeModal('registerModal');
+            showToast(`Thank you! Your ${roleName} account has been registered successfully.`);
+            e.target.reset();
         }
 
         function handleBookingSubmit(e) {
             e.preventDefault();
             closeModal('bookingModal');
-            showToast("Booking submitted! We'll confirm via SMS within 15 minutes.");
+            showToast("Booking request submitted! We will confirm your slot within 15 minutes.");
             e.target.reset();
         }
 
-        function quickLogin(role) {
-            closeModal('loginModal');
-            showToast(`Logged in as ${role.toUpperCase()} (Demo Mode Active)`);
-            if (role === 'provider') {
-                openProviderEditModal();
-            }
-        }
-
-        // Search Daycare Modal Logic
+        // Search Filters
         function renderSearchResults(list) {
             const container = document.getElementById('searchCentersResults');
-            if (list.length === 0) {
+            if (!list || list.length === 0) {
                 container.innerHTML = '<div style="text-align:center; padding:20px; color:#9E9E9E;">No centers matched filters.</div>';
                 return;
             }
@@ -1483,12 +1215,6 @@
                     overlay.classList.remove('active');
                 }
             });
-        });
-
-        // Initialize UI with stored or default Provider data
-        document.addEventListener('DOMContentLoaded', () => {
-            const data = getProviderData();
-            applyProviderDataToUI(data);
         });
     </script>
 </body>
