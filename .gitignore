@@ -3,11 +3,9 @@
 *.log
 deploy*.ps1
 fix_upload.ps1
-.vercel/
-.env
+.vercel
+.env*
+vercel-demo/assets/
 uploads/*
 !uploads/.gitkeep
 
-
-.vercel
-.env*
